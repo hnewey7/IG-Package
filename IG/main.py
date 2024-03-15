@@ -121,12 +121,8 @@ class IG():
         Returns Watchlist object."""
     # Adjusting header.
     self.header["Version"] = "1"
-    # Creating body.
-    body = {
-      "name" : name
-    }
     # Sending request.
-    response = requests.post("https://api.ig.com/gateway/deal/watchlists",headers=self.header,data=json.dumps(body))
+    response = requests.post("https://api.ig.com/gateway/deal/watchlists",headers=self.header,data=json.dumps({"name":name}))
     # Creating watchlist object.
     watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
     self.watchlists.append(watchlist)
@@ -166,15 +162,50 @@ class Watchlist():
     self.id = watchlist_dict["id"]
     self.name = watchlist_dict["name"]
     self.IG_obj = IG_obj
-    self.markets = self.get_markets()
+    self.markets = self.get_instruments()
 
-  def get_markets(self) -> list:
-    """ Getting financial instruments held within the watchlist."""
+  def get_instruments(self) -> list:
+    """ Getting financial instruments held within the watchlist.
+        Returns list of markets stored within watchlist."""
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request.
     response = requests.get("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),headers=self.IG_obj.header)
     return json.loads(response.text)["markets"]
+  
+  def get_instrument(self,name:str=None,epic:str=None) -> dict:
+    """ Gets instrument by name or epic.
+        Returns dictionary with relevant instrument information."""
+    for instrument in self.markets:
+      if instrument["instrumentName"] == name or instrument["epic"] == epic:
+        return instrument
+  
+  def add_instrument(self,instrument_name:str):
+    """ Adding instrument to watchlist.
+        Updates watchlist markets attribute."""
+    # Adjusting header.
+    self.IG_obj.header["Version"] = "1"
+    # Sending request for instrument.
+    response = requests.get("https://api.ig.com/gateway/deal/markets?searchTerm={}".format(instrument_name),headers=self.IG_obj.header)
+    instruments = json.loads(response.text)["markets"]
+    top_instrument_epic = instruments[0]["epic"]
+    # Sending request to add instrument to watchlist.
+    response = requests.put("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),headers=self.IG_obj.header,data=json.dumps({"epic":top_instrument_epic}))
+    # Updating markets.
+    self.markets = self.get_instruments()
+
+  def del_instrument(self,instrument_name:str=None,epic:str=None):
+    """ Deleting instrument from watchlist.
+        Takes instrument name and searches watchlist for it.
+        Updates watchlist markets attribute."""
+    # Getting instrument.
+    instrument = self.get_instrument(instrument_name,epic)
+    # Adjusting header.
+    self.IG_obj.header["Version"] = "1"
+    # Sending request to delete instrument from watchlist.
+    response = requests.delete("https://api.ig.com/gateway/deal/watchlists/{}/{}".format(self.id,instrument["epic"]),headers=self.IG_obj.header)
+    # Updating markets.
+    self.markets = self.get_instruments()
 
 # - - - - - - - - - - - - - - - - - - - - -
       
@@ -182,8 +213,12 @@ if __name__ == "__main__":
 
   ig = IG()
 
-  ig.add_watchlist("Test")
-
+  new_watchlist = ig.add_watchlist("Test")
+  print(new_watchlist.markets) 
+  new_watchlist.add_instrument("FTSE 100")
+  print(new_watchlist.markets) 
+  new_watchlist.del_instrument("FTSE 100")
+  print(new_watchlist.markets) 
   ig.del_watchlist("Test")
 
   ig.close_trading_session()
