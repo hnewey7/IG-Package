@@ -33,9 +33,10 @@ class IG():
   def __init__(self) -> None:
     self.header = get_header()
     self.body = get_body()
-    self.watchlists = []
     # Opening trading session.
     self.open_trading_session()
+    # Getting all watchlists.
+    self.watchlists = self.get_watchlist_objs()
 
   def open_trading_session(self) -> None:
     """ Opens a IG Group trading session.
@@ -96,6 +97,17 @@ class IG():
     # Sending request.
     response = requests.get("https://api.ig.com/gateway/deal/watchlists",headers=self.header)
     return json.loads(response.text)["watchlists"]
+  
+  def get_watchlist_objs(self) -> list:
+    """ Getting watchlists within IG Obj directly from IG API.
+        Returns list of watchlist objects."""
+    # Getting all watchlists from IG Group's API.
+    watchlists_IG = self.get_watchlists_from_IG()
+    # Creating Watchlist objects from list provided.
+    watchlist_objs = []
+    for watchlist_dict in watchlists_IG:
+      watchlist_objs.append(Watchlist(watchlist_dict["id"],self))
+    return watchlist_objs
 
   def get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict:
     """ Getting a singular watchlist associated with the API key.
@@ -116,18 +128,22 @@ class IG():
       if watchlist.name == name or watchlist.id == id:
         return watchlist
 
-  def add_watchlist(self,name):
+  def add_watchlist(self,name:str):
     """ Adding watchlist associated to relevant API key.
         Returns Watchlist object."""
     # Adjusting header.
     self.header["Version"] = "1"
-    # Sending request.
-    response = requests.post("https://api.ig.com/gateway/deal/watchlists",headers=self.header,data=json.dumps({"name":name}))
-    # Creating watchlist object.
-    watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
-    self.watchlists.append(watchlist)
+    # Checking if watchlist already exists.
+    if not self.get_watchlist_obj(name):
+      # Sending request.
+      response = requests.post("https://api.ig.com/gateway/deal/watchlists",headers=self.header,data=json.dumps({"name":name}))
+      # Creating watchlist object.
+      watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
+      self.watchlists.append(watchlist)
 
-    return watchlist
+      return watchlist
+    else:
+      logger.info("Watchlist cannot be added, already exists.")
 
   def del_watchlist(self,name:str=None,id:str=None) -> None:
     """ Deleting watchlist associated to relevant API key.
