@@ -28,7 +28,7 @@ class RequestHandler():
         - Ensures response is successful.
         - Limits requests sent."""
   
-  def __init__(self,period):
+  def __init__(self,period) -> None:
     self.period = period # Time period between each request.
     self.previous_request_time = time.time()
 
@@ -62,7 +62,7 @@ class IG():
 
       **NOTE: Enter your API key in IG_API_Details.py**"""
 
-  def __init__(self) -> None:
+  def __init__(self,watchlist_enable:bool=False) -> None:
     self.header = get_header()
     self.body = get_body()
     # Initialising request handler.
@@ -70,7 +70,8 @@ class IG():
     # Opening trading session.
     self.open_trading_session()
     # Getting all watchlists.
-    self.watchlists = self.get_watchlist_objs()
+    if watchlist_enable:
+      self.watchlists = self.get_watchlist_objs()
 
   def open_trading_session(self) -> None:
     """ Opens a IG Group trading session.
