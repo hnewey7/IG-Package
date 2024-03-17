@@ -12,6 +12,7 @@ import logging
 import os
 from pathlib import Path
 import time
+import pandas as pd
 
 from IG_API_Details import get_body,get_header
 
@@ -286,17 +287,66 @@ class Watchlist():
     self.markets = self.get_instruments()
 
 # - - - - - - - - - - - - - - - - - - - - -
+    
+class Instrument():
+  """ Object representing a single instruement from IG API.
+        - Allows for collection of historical data."""
+  
+  def __init__(self,epic,IG_obj:IG) -> None:
+    self.IG_obj = IG_obj
+    # Adjusting header.
+    self.IG_obj.header["Version"] = "1"
+    # Sending request with epic to receive market details.
+    logger.info(f"Requesting instrument details ({epic}).")
+    response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/markets/{}".format(epic),"GET",headers=self.IG_obj.header)
+
+    instrument_details = json.loads(response.text)["instrument"]
+    self.epic = instrument_details["epic"]
+    self.name = instrument_details["name"]
+    self.lot_size = instrument_details["lotSize"]
+    self.type = instrument_details["type"]
+    self.market_id = instrument_details["marketId"]
+    self.margin = instrument_details["margin"]
+
+  def get_historical_prices(self,resolution:str,start:str,end:str) -> pd.DataFrame:
+    """ Getting historical price data for the instrument from IG API.
+        Requires resolution, start date and end date.
+        Returns pandas dataframe containing Date, Open, High, Low and Close data."""
+    # Adjusting header.
+    self.IG_obj.header["Version"] = "1"
+    # Requesting historical price data.
+    response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/prices/{}/{}?startdate={}&enddate={}".format(self.epic,resolution,start,end),"GET",headers=self.IG_obj.header)
+    # Formatting data.
+    all_data = []
+    for price in json.loads(response.text)["prices"]:
+      single_data = [price["snapshotTime"],price["openPrice"]["bid"],price["highPrice"]["bid"],price["lowPrice"]["bid"],price["closePrice"]["bid"]]
+      all_data.append(single_data)
+    # Creating dataframe.
+    df = pd.DataFrame(all_data, columns=['Datetime', 'Open', 'High', 'Low', 'Close'])
+    return df
+
+# - - - - - - - - - - - - - - - - - - - - -
       
 if __name__ == "__main__":
 
+  # Getting logger.
+  logger.setLevel(logging.INFO)
+
+  # Creating formatter.
+  formatter = logging.Formatter(fmt="%(asctime)s:%(levelname)s:   %(message)s",datefmt="%Y-%m-%d %H:%M:%S")
+
+  # Creating stream handler.
+  stdout = logging.StreamHandler()
+  stdout.setLevel(logging.INFO)
+  stdout.setFormatter(formatter)
+  logger.addHandler(stdout)
+
+  logger.info("- - - - - - - - - - - - - - - - -")
+
   ig = IG()
 
-  new_watchlist = ig.add_watchlist("Test")
-  print(new_watchlist.markets) 
-  new_watchlist.add_instrument("FTSE 100")
-  print(new_watchlist.markets) 
-  new_watchlist.del_instrument("FTSE 100")
-  print(new_watchlist.markets) 
-  ig.del_watchlist("Test")
+  instrument = Instrument("IX.D.FTSE.DAILY.IP",ig)
+  data = instrument.get_historical_prices(resolution="DAY",start="2024:01:01-00:00:00",end="2024:03:17-00:00:00")
+  print(data)
 
   ig.close_trading_session()
