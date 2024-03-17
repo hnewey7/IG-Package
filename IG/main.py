@@ -234,10 +234,11 @@ class Watchlist():
     self.id = watchlist_dict["id"]
     self.name = watchlist_dict["name"]
     self.IG_obj = IG_obj
-    self.markets = self.get_instruments()
+    self.markets = self.get_instrument_objects()
+    print(self.markets)
 
-  def get_instruments(self) -> list:
-    """ Getting financial instruments held within the watchlist.
+  def get_instruments_IG(self) -> list:
+    """ Getting financial instruments held within the watchlist from the IG API.
         Returns list of markets stored within watchlist."""
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
@@ -249,6 +250,18 @@ class Watchlist():
       return json.loads(response.text)["markets"]
     else:
       logger.info("All instruments: DENIED.")
+
+  def get_instrument_objects(self) -> list:
+    """ Getting instrument objects of all instruments within the watchlist.
+        Returns list of instrument objects."""
+    # Getting instruments from IG.
+    instruments_IG = self.get_instruments_IG()
+    # Creating list of instruments.
+    instrument_objs = []
+    for instrument in instruments_IG:
+      instrument_objs.append(Instrument(instrument["epic"],self.IG_obj))
+    return instrument_objs
+      
   
   def get_instrument(self,name:str=None,epic:str=None) -> dict:
     """ Gets instrument by name or epic.
