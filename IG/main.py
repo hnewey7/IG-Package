@@ -12,6 +12,7 @@ import logging
 import os
 from pathlib import Path
 import time
+from datetime import datetime
 import pandas as pd
 
 from .IG_API_Details import get_body,get_header
@@ -356,10 +357,12 @@ class Instrument():
     # Formatting data.
     all_data = []
     for price in json.loads(response.text)["prices"]:
-      single_data = [price["snapshotTime"],price["openPrice"]["bid"],price["highPrice"]["bid"],price["lowPrice"]["bid"],price["closePrice"]["bid"]]
+      datetime_obj = datetime.strptime(price["snapshotTime"],"%Y:%m:%d-%H:%M:%S")
+      single_data = [datetime_obj,price["openPrice"]["bid"],price["highPrice"]["bid"],price["lowPrice"]["bid"],price["closePrice"]["bid"]]
       all_data.append(single_data)
     # Creating dataframe.
     df = pd.DataFrame(all_data, columns=['Datetime', 'Open', 'High', 'Low', 'Close'])
+    df.set_index("Datetime",inplace=True)
     return df
 
 # - - - - - - - - - - - - - - - - - - - - -
