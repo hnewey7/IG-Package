@@ -45,32 +45,45 @@ class IG():
         - Requests new session if expired or no previous session."""
     # Checking if previous session.
     if os.path.exists(os.getcwd() + "\\session_info.json"):
+      logger.info("Previous session recovered.")
       # Open file and add headers.
+      logger.info("Opening JSON of previous session:")
       with open("session_info.json", "r") as f:
         json_storage = json.load(f)
         self.header["Version"] = "1"
         self.header["CST"] = json_storage["CST"]
         self.header["X-SECURITY-TOKEN"] = json_storage["X-SECURITY-TOKEN"]
+        logger.info(f"  CST : {self.header['CST']}")
+        logger.info(f"  X-SECURITY-TOKEN : {self.header['X-SECURITY-TOKEN']}")
 
     # Sending request.
+    logger.info("Requesting trading session.")
     response = requests.post("https://api.ig.com/gateway/deal/session",headers=self.header,data=json.dumps(self.body))
 
     # Checking status.
     while not response.ok:
+      logger.info("Trading session: DENIED")
       # Deleting previous headers.
       if "CST" in self.header.keys():
         del self.header["CST"]
       if "X-SECURITY-TOKEN" in self.header.keys():
         del self.header["X-SECURITY-TOKEN"]
       # Sending new request.
+      logger.info("Requesting new trading session.")
       response = requests.post("https://api.ig.com/gateway/deal/session",headers=self.header,data=json.dumps(self.body))
       time.sleep(2)
 
+    logger.info("Trading session: APPROVED")
+
     # Adding CST and Token to headers.
+    logger.info("Adding session tokens to header.")
     self.header["CST"] = response.headers["CST"]
     self.header["X-SECURITY-TOKEN"] = response.headers["X-SECURITY-TOKEN"]
+    logger.info(f"  CST : {self.header['CST']}")
+    logger.info(f"  X-SECURITY-TOKEN : {self.header['X-SECURITY-TOKEN']}")
 
     # Saving information to json.
+    logger.info("Storing current session to JSON.")
     json_storage = {}
     json_storage["CST"] = self.header["CST"]
     json_storage["X-SECURITY-TOKEN"] = self.header["X-SECURITY-TOKEN"]
@@ -84,6 +97,7 @@ class IG():
     self.header["Version"] = "1"
     self.header["_method"] = "DELETE"
     # Sending request.
+    logger.info("Requesting close trading session.")
     response = requests.put("https://api.ig.com/gateway/deal/session",headers=self.header)
     # Reverting header after.
     del self.header["_method"]
@@ -95,8 +109,13 @@ class IG():
     # Adjusting header.
     self.header["Version"] = "1"
     # Sending request.
+    logger.info("Requesting all watchlists associated with API key.")
     response = requests.get("https://api.ig.com/gateway/deal/watchlists",headers=self.header)
-    return json.loads(response.text)["watchlists"]
+    if response.ok:
+      logger.info("All watchlists: APPROVED")
+      return json.loads(response.text)["watchlists"]
+    else:
+      logger.info("All watchlists: DENIED")
   
   def get_watchlist_objs(self) -> list:
     """ Getting watchlists within IG Obj directly from IG API.
@@ -106,6 +125,7 @@ class IG():
     # Creating Watchlist objects from list provided.
     watchlist_objs = []
     for watchlist_dict in watchlists_IG:
+      logger.info(f"Creating watchlist object from id ({watchlist_dict['id']}).")
       watchlist_objs.append(Watchlist(watchlist_dict["id"],self))
     return watchlist_objs
 
@@ -136,12 +156,17 @@ class IG():
     # Checking if watchlist already exists.
     if not self.get_watchlist_obj(name):
       # Sending request.
+      logger.info(f"Requesting new watchlist ({name}).")
       response = requests.post("https://api.ig.com/gateway/deal/watchlists",headers=self.header,data=json.dumps({"name":name}))
-      # Creating watchlist object.
-      watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
-      self.watchlists.append(watchlist)
+      if response.ok:
+        logger.info("New watchlist: APPROVED")
+        # Creating watchlist object.
+        watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
+        self.watchlists.append(watchlist)
 
-      return watchlist
+        return watchlist
+      else:
+        logger.info("New watchlist: DENIED")
     else:
       logger.info("Watchlist cannot be added, already exists.")
 
@@ -149,15 +174,12 @@ class IG():
     """ Deleting watchlist associated to relevant API key.
         Returns Watchlist object."""
     # Getting watchlist.
-    if name:
-      watchlist_IG = self.get_watchlist_from_IG(name=name)
-      watchlist_obj = self.get_watchlist_obj(name=name)
-    else:
-      watchlist_IG = self.get_watchlist_from_IG(id=id)
-      watchlist_obj = self.get_watchlist_obj(id=id)
+    watchlist_IG = self.get_watchlist_from_IG(name=name,id=id)
+    watchlist_obj = self.get_watchlist_obj(name=name,id=id)
     # Adjusting header.
     self.header["Version"] = "1"
     # Sending request.
+    logger.info(f"Requesting watchlist to be removed ({watchlist_IG['id']}).")
     response = requests.delete("https://api.ig.com/gateway/deal/watchlists/{}".format(watchlist_IG["id"]),headers=self.header)
     # Deleting watchlist object.
     self.watchlists.remove(watchlist_obj)
@@ -186,8 +208,13 @@ class Watchlist():
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request.
+    logger.info(f"Requesting all instruments for watchlist ({self.id}).")
     response = requests.get("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),headers=self.IG_obj.header)
-    return json.loads(response.text)["markets"]
+    if response.ok:
+      logger.info("All instruments: APPROVED.")
+      return json.loads(response.text)["markets"]
+    else:
+      logger.info("All instruments: DENIED.")
   
   def get_instrument(self,name:str=None,epic:str=None) -> dict:
     """ Gets instrument by name or epic.
@@ -202,10 +229,12 @@ class Watchlist():
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request for instrument.
+    logger.info(f"Requesting search for market ({instrument_name}).")
     response = requests.get("https://api.ig.com/gateway/deal/markets?searchTerm={}".format(instrument_name),headers=self.IG_obj.header)
     instruments = json.loads(response.text)["markets"]
     top_instrument_epic = instruments[0]["epic"]
     # Sending request to add instrument to watchlist.
+    logger.info(f"Adding top market ({top_instrument_epic}) to watchlist ({self.id})")
     response = requests.put("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),headers=self.IG_obj.header,data=json.dumps({"epic":top_instrument_epic}))
     # Updating markets.
     self.markets = self.get_instruments()
@@ -219,6 +248,7 @@ class Watchlist():
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request to delete instrument from watchlist.
+    logger.info(f"Requesting instrument to be removed ({instrument['epic']}) from watchlist ({self.id}).")
     response = requests.delete("https://api.ig.com/gateway/deal/watchlists/{}/{}".format(self.id,instrument["epic"]),headers=self.IG_obj.header)
     # Updating markets.
     self.markets = self.get_instruments()
