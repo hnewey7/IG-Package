@@ -6,4 +6,4 @@ Created on Tuesday 12th March 2024.
 
 '''
 
-from .IG_API_Details import get_body, get_header
+from .main import IG

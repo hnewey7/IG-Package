@@ -14,7 +14,7 @@ from pathlib import Path
 import time
 import pandas as pd
 
-from IG_API_Details import get_body,get_header
+from .IG_API_Details import get_body,get_header
 
 # - - - - - - - - - - - - - - - - - - - - -
 
@@ -218,6 +218,20 @@ class IG():
     # Deleting watchlist object.
     self.watchlists.remove(watchlist_obj)
 
+  def search_instrument(self,name:str):
+    """ Search for instrument.
+        Requires string to search for.
+        Returns top instrument that matches string provided."""
+    # Searching for instrument.
+    self.header["Version"] = "1"
+    logger.info(f"Requesting search for market ({name}).")
+    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/markets?searchTerm={}".format(name),"GET",headers=self.header)
+    instruments = json.loads(response.text)["markets"]
+    top_instrument_epic = instruments[0]["epic"]
+    # Creating Instrument from epic.
+    instrument = Instrument(top_instrument_epic,self)
+    return instrument
+
 # - - - - - - - - - - - - - - - - - - - - -
     
 class Watchlist():
@@ -260,7 +274,6 @@ class Watchlist():
     for instrument in instruments_IG:
       instrument_objs.append(Instrument(instrument["epic"],self.IG_obj))
     return instrument_objs
-      
   
   def get_instrument(self,name:str=None,epic:str=None) -> dict:
     """ Gets instrument by name or epic.
@@ -350,26 +363,3 @@ class Instrument():
     return df
 
 # - - - - - - - - - - - - - - - - - - - - -
-      
-if __name__ == "__main__":
-
-  # Getting logger.
-  logger.setLevel(logging.INFO)
-
-  # Creating formatter.
-  formatter = logging.Formatter(fmt="%(asctime)s:%(levelname)s:   %(message)s",datefmt="%Y-%m-%d %H:%M:%S")
-
-  # Creating stream handler.
-  stdout = logging.StreamHandler()
-  stdout.setLevel(logging.INFO)
-  stdout.setFormatter(formatter)
-  logger.addHandler(stdout)
-
-  logger.info("- - - - - - - - - - - - - - - - -")
-
-  ig = IG()
-
-  instrument = Instrument("IX.D.FTSE.DAILY.IP",ig)
-  data = instrument.get_historical_prices(resolution="DAY",start="2024:01:01-00:00:00",end="2024:03:17-00:00:00")
-
-  ig.close_trading_session()
