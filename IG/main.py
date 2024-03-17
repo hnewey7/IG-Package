@@ -235,7 +235,6 @@ class Watchlist():
     self.name = watchlist_dict["name"]
     self.IG_obj = IG_obj
     self.markets = self.get_instrument_objects()
-    print(self.markets)
 
   def get_instruments_IG(self) -> list:
     """ Getting financial instruments held within the watchlist from the IG API.
@@ -300,6 +299,17 @@ class Watchlist():
     # Updating markets.
     self.markets = self.get_instruments()
 
+  def get_all_historical_data(self,resolution:str,start:str,end:str) -> dict:
+    """ Gets all historical data from instruments contained within the watchlist.
+        Requires resolution, start date and end data.
+        Returns a dictionary of all dataframes with the key being the instrument name."""
+    # Creating dictionary to store all dataframes.
+    df_dict = {}
+    for instrument in self.markets:
+      df = instrument.get_historical_prices(resolution=resolution,start=start,end=end)
+      df_dict[instrument.name] = df
+    return df_dict
+
 # - - - - - - - - - - - - - - - - - - - - -
     
 class Instrument():
@@ -361,6 +371,5 @@ if __name__ == "__main__":
 
   instrument = Instrument("IX.D.FTSE.DAILY.IP",ig)
   data = instrument.get_historical_prices(resolution="DAY",start="2024:01:01-00:00:00",end="2024:03:17-00:00:00")
-  print(data)
 
   ig.close_trading_session()
