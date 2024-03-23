@@ -34,3 +34,6 @@ Please make sure to report any bugs found as issues on Github. If you then want 
 
 ## Future Development
 
+1. Adding functions to handle active positions, therefore allowing users to execute trades.
+2. Adding working trades so executing trades when the price reaches a certain amount on a specific instrument.
+3. Adding a demo version as IG's API also can manage demo accounts too.
