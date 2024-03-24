@@ -1,0 +1,4 @@
+site_name: IG Package
+nav:
+  - Home: index.md
+  - About: about.md

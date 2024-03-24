@@ -240,7 +240,7 @@ class Watchlist():
       - Holds a series of financial instruments.
       - Can be used to get historical data for all."""
   
-  def __init__(self,id,IG_obj: IG) -> None:
+  def __init__(self,id:str,IG_obj: IG) -> None:
     # Adapting header.
     IG_obj.header["Version"] = "1"
     # Getting watchlist from IG API.
@@ -330,7 +330,7 @@ class Instrument():
   """ Object representing a single instruement from IG API.
         - Allows for collection of historical data."""
   
-  def __init__(self,epic,IG_obj:IG) -> None:
+  def __init__(self,epic:str,IG_obj:IG) -> None:
     self.IG_obj = IG_obj
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
