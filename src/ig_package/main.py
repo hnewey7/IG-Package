@@ -61,11 +61,23 @@ class IG():
         - Get historical data.
         - Close trading sessions.
 
-      **NOTE: Enter your API key in IG_API_Details.py**"""
+      **NOTE: API key, username and password should be entered when initialising the IG object."""
 
-  def __init__(self,watchlist_enable:bool=False) -> None:
-    self.header = get_header()
-    self.body = get_body()
+  def __init__(self,API_key:str,username:str,password:str,watchlist_enable:bool=False) -> None:
+    # Defining header.
+    self.header = {
+      "Content-Type":"application/json; charset=UTF-8",
+      "Accept":"application/json; charset=UTF-8",
+      "VERSION":"2",
+      "X-IG-API-KEY":API_key
+    }
+    # Defining body.
+    self.body = {
+      "identifier":username,
+      "password":password,
+      "encrytedPassword":False
+    }
+
     # Initialising request handler.
     self.request_handler = RequestHandler(2)
     # Opening trading session.
