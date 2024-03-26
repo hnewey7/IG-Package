@@ -18,7 +18,7 @@ def test_IG_valid_connection(expected_time) -> None:
   """ Testing whether IG object connects within certain amount of time."""
   start_time = time.time()
   # Initialising IG object.
-  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username="hnewey",password="DexteR12712")
+  ig = IG(API_key="32691aee9bc9e003ccc8045982d8aa73de86ad69",username="",password="")
   # Checking within time.
   assert time.time() - start_time < expected_time
   # Checking if valid session.
