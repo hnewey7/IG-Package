@@ -14,6 +14,7 @@ from pathlib import Path
 import time
 from datetime import datetime
 import pandas as pd
+import asyncio
 
 from .IG_API_Details import get_body,get_header
 
@@ -33,11 +34,11 @@ class RequestHandler():
     self.period = period # Time period between each request.
     self.previous_request_time = time.time()
 
-  def send_request(self,url,method,headers,data=None):
+  async def send_request(self,url,method,headers,data=None):
     """ Sending request to the API.
         Requires url, method, headers and data."""
     while time.time() - self.previous_request_time < self.period:
-      time.sleep(self.period)
+      await asyncio.sleep(self.period)
     else:
       self.previous_request_time = time.time()
       # Choosing method.
@@ -77,20 +78,21 @@ class IG():
       "password":password,
       "encrytedPassword":False
     }
-
     # Initialising request handler.
     self.request_handler = RequestHandler(2)
     # Opening trading session.
-    self.open_trading_session()
+    asyncio.run(self.open_trading_session())
     # Getting all watchlists.
     if watchlist_enable:
       self.watchlists = self.get_watchlist_objs()
 
-  def open_trading_session(self) -> None:
+  async def open_trading_session(self) -> None:
     """ Opens a IG Group trading session.
         - Checks if previous session open.
         - Saves session details to JSON file for future use.
         - Requests new session if expired or no previous session."""
+    # Getting start time.
+    start_time = time.time()
     # Checking if previous session.
     if os.path.exists(os.getcwd() + "\\session_info.json"):
       logger.info("Previous session recovered.")
@@ -106,7 +108,14 @@ class IG():
 
     # Sending request.
     logger.info("Requesting trading session.")
-    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body))
+    request_task = asyncio.create_task(self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body)))
+    timeout_task = asyncio.create_task(self.check_timeout(start_time))
+    done, _ = await asyncio.wait([request_task,timeout_task],return_when=asyncio.FIRST_COMPLETED)
+    for task in done:
+      if task == request_task:
+        response = task.result()
+      else:
+        raise TimeoutError
 
     # Checking status.
     while not response.ok:
@@ -118,7 +127,14 @@ class IG():
         del self.header["X-SECURITY-TOKEN"]
       # Sending new request.
       logger.info("Requesting new trading session.")
-      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body))
+      request_task = asyncio.create_task(self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body)))
+      timeout_task = asyncio.create_task(self.check_timeout(start_time))
+      done, _ = await asyncio.wait([request_task,timeout_task],return_when=asyncio.FIRST_COMPLETED)
+      for task in done:
+        if task == request_task:
+          response = task.result()
+        else:
+          raise TimeoutError
 
     logger.info("Trading session: APPROVED")
 
@@ -137,6 +153,24 @@ class IG():
     json_storage = json.dumps(json_storage)
     with open("session_info.json", "w") as f:
       f.write(json_storage)
+
+  async def check_timeout(self,start_time:float) -> None:
+    """ Checking for timeout.
+        Requires start time."""
+    timeout_period = 5
+    while time.time() - start_time < timeout_period:
+      await asyncio.sleep(1)
+    else:
+      return
+
+  def check_trading_session(self) -> bool:
+    """ Checking if trading session active.
+        Returns bool depending if session is open or not."""
+    # Adjusting header.
+    self.header["Version"] = "1"
+    logger.info("Requesting active trading session.")
+    response = asyncio.run(self.request_handler.send_request("https://api.ig.com/gateway/deal/session","GET",headers=self.header))
+    return response.ok
     
   def close_trading_session(self) -> None:
     """ Close the active trading session."""
