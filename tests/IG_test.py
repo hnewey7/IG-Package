@@ -11,6 +11,8 @@ import time
 import requests
 from ig_package import IG
 
+from src.ig_package.IG_API_Details import get_username, get_password
+
 # - - - - - - - - - - - - - - - - -
 
 @pytest.mark.parametrize("expected_time", [(60 - i * 6) for i in range(10)])
@@ -18,7 +20,9 @@ def test_IG_valid_connection(expected_time) -> None:
   """ Testing whether IG object connects within certain amount of time."""
   start_time = time.time()
   # Initialising IG object.
-  ig = IG(API_key="32691aee9bc9e003ccc8045982d8aa73de86ad69",username="",password="")
+  username = get_username()
+  password = get_password()
+  ig = IG(API_key="32691aee9bc9e003ccc8045982d8aa73de86ad69",username=username,password=password)
   # Checking within time.
   assert time.time() - start_time < expected_time
   # Checking if valid session.
