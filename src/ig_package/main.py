@@ -14,7 +14,6 @@ from pathlib import Path
 import time
 from datetime import datetime
 import pandas as pd
-import asyncio
 
 from .IG_API_Details import get_body,get_header
 
@@ -34,11 +33,11 @@ class RequestHandler():
     self.period = period # Time period between each request.
     self.previous_request_time = time.time()
 
-  async def send_request(self,url,method,headers,data=None):
+  def send_request(self,url,method,headers,data=None):
     """ Sending request to the API.
         Requires url, method, headers and data."""
     while time.time() - self.previous_request_time < self.period:
-      await asyncio.sleep(self.period)
+      time.sleep(self.period)
     else:
       self.previous_request_time = time.time()
       # Choosing method.
@@ -81,18 +80,16 @@ class IG():
     # Initialising request handler.
     self.request_handler = RequestHandler(2)
     # Opening trading session.
-    asyncio.run(self.open_trading_session())
+    self.open_trading_session()
     # Getting all watchlists.
     if watchlist_enable:
       self.watchlists = self.get_watchlist_objs()
 
-  async def open_trading_session(self) -> None:
+  def open_trading_session(self) -> None:
     """ Opens a IG Group trading session.
         - Checks if previous session open.
         - Saves session details to JSON file for future use.
         - Requests new session if expired or no previous session."""
-    # Getting start time.
-    start_time = time.time()
     # Checking if previous session.
     if os.path.exists(os.getcwd() + "\\session_info.json"):
       logger.info("Previous session recovered.")
@@ -108,60 +105,28 @@ class IG():
 
     # Sending request.
     logger.info("Requesting trading session.")
-    request_task = asyncio.create_task(self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body)))
-    timeout_task = asyncio.create_task(self.check_timeout(start_time))
-    done, _ = await asyncio.wait([request_task,timeout_task],return_when=asyncio.FIRST_COMPLETED)
-    for task in done:
-      if task == request_task:
-        response = task.result()
-      else:
-        raise TimeoutError
+    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body))
 
-    # Checking status.
-    while not response.ok:
-      logger.info("Trading session: DENIED")
-      # Deleting previous headers.
-      if "CST" in self.header.keys():
-        del self.header["CST"]
-      if "X-SECURITY-TOKEN" in self.header.keys():
-        del self.header["X-SECURITY-TOKEN"]
-      # Sending new request.
-      logger.info("Requesting new trading session.")
-      request_task = asyncio.create_task(self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body)))
-      timeout_task = asyncio.create_task(self.check_timeout(start_time))
-      done, _ = await asyncio.wait([request_task,timeout_task],return_when=asyncio.FIRST_COMPLETED)
-      for task in done:
-        if task == request_task:
-          response = task.result()
-        else:
-          raise TimeoutError
+    if response.ok:
+      logger.info("Trading session: APPROVED")
 
-    logger.info("Trading session: APPROVED")
+      # Adding CST and Token to headers.
+      logger.info("Adding session tokens to header.")
+      self.header["CST"] = response.headers["CST"]
+      self.header["X-SECURITY-TOKEN"] = response.headers["X-SECURITY-TOKEN"]
+      logger.info(f"  CST : {self.header['CST']}")
+      logger.info(f"  X-SECURITY-TOKEN : {self.header['X-SECURITY-TOKEN']}")
 
-    # Adding CST and Token to headers.
-    logger.info("Adding session tokens to header.")
-    self.header["CST"] = response.headers["CST"]
-    self.header["X-SECURITY-TOKEN"] = response.headers["X-SECURITY-TOKEN"]
-    logger.info(f"  CST : {self.header['CST']}")
-    logger.info(f"  X-SECURITY-TOKEN : {self.header['X-SECURITY-TOKEN']}")
-
-    # Saving information to json.
-    logger.info("Storing current session to JSON.")
-    json_storage = {}
-    json_storage["CST"] = self.header["CST"]
-    json_storage["X-SECURITY-TOKEN"] = self.header["X-SECURITY-TOKEN"]
-    json_storage = json.dumps(json_storage)
-    with open("session_info.json", "w") as f:
-      f.write(json_storage)
-
-  async def check_timeout(self,start_time:float) -> None:
-    """ Checking for timeout.
-        Requires start time."""
-    timeout_period = 5
-    while time.time() - start_time < timeout_period:
-      await asyncio.sleep(1)
+      # Saving information to json.
+      logger.info("Storing current session to JSON.")
+      json_storage = {}
+      json_storage["CST"] = self.header["CST"]
+      json_storage["X-SECURITY-TOKEN"] = self.header["X-SECURITY-TOKEN"]
+      json_storage = json.dumps(json_storage)
+      with open("session_info.json", "w") as f:
+        f.write(json_storage)
     else:
-      return
+      logger.info("Trading session: NOT APPROVED")
 
   def check_trading_session(self) -> bool:
     """ Checking if trading session active.
@@ -169,19 +134,25 @@ class IG():
     # Adjusting header.
     self.header["Version"] = "1"
     logger.info("Requesting active trading session.")
-    response = asyncio.run(self.request_handler.send_request("https://api.ig.com/gateway/deal/session","GET",headers=self.header))
+    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","GET",headers=self.header)
     return response.ok
     
-  def close_trading_session(self) -> None:
-    """ Close the active trading session."""
+  def close_trading_session(self) -> bool:
+    """ Close the active trading session.
+        Returns bool depending if response was valid."""
     # Adjusting header.
     self.header["Version"] = "1"
     self.header["_method"] = "DELETE"
     # Sending request.
     logger.info("Requesting close trading session.")
     response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","PUT",headers=self.header)
+    # Resending request if invalid.
+    while not response.ok:
+      logger.info("Requesting close trading session.")
+      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","PUT",headers=self.header)
     # Reverting header after.
     del self.header["_method"]
+    return response.ok
 
   def get_watchlists_from_IG(self) -> dict:
     """ Getting all watchlists associated with the API key.
