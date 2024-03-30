@@ -61,7 +61,7 @@ class IG():
 
       **NOTE: API key, username and password should be entered when initialising the IG object."""
 
-  def __init__(self,API_key:str,username:str,password:str,encrypted_enable:bool=False,watchlist_enable:bool=False) -> None:
+  def __init__(self,API_key:str,username:str,password:str,watchlist_enable:bool=False) -> None:
     # Defining header.
     self.header = {
       "Content-Type":"application/json; charset=UTF-8",
