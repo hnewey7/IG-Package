@@ -53,4 +53,17 @@ def test_IG_close_trading_session(iteration) -> None:
   # Deleting object.
   del ig
   
+def test_IG_get_watchlist() -> None:
+  """ Testing getting watchlists through the IG object."""
+  # Initialising IG object.
+  username = get_username()
+  password = get_password()
+  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username=username,password=password,watchlist_enable=True)
+  # Checking if watchlists available.
+  assert ig.watchlists
+  for watchlist in ig.watchlists:
+    assert hasattr(watchlist,"id")
+    assert hasattr(watchlist,"name")
+    assert hasattr(watchlist,"IG_obj")
+    assert hasattr(watchlist,"markets")
                  
