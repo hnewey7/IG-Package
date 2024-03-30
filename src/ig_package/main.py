@@ -15,8 +15,6 @@ import time
 from datetime import datetime
 import pandas as pd
 
-from .IG_API_Details import get_body,get_header
-
 # - - - - - - - - - - - - - - - - - - - - -
 
 global logger
@@ -37,7 +35,7 @@ class RequestHandler():
     """ Sending request to the API.
         Requires url, method, headers and data."""
     while time.time() - self.previous_request_time < self.period:
-      time.sleep(self.period)
+      time.sleep(self.period/10)
     else:
       self.previous_request_time = time.time()
       # Choosing method.
@@ -74,86 +72,44 @@ class IG():
     # Defining body.
     self.body = {
       "identifier":username,
-      "password":password,
-      "encrytedPassword":encrypted_enable
+      "password":password
     }
     # Initialising request handler.
     self.request_handler = RequestHandler(2)
     # Opening trading session.
-    self.open_trading_session()
+    response_successful = self.open_trading_session()
     # Getting all watchlists.
-    if watchlist_enable:
+    if watchlist_enable and response_successful:
       self.watchlists = self.get_watchlist_objs()
 
-  def open_trading_session(self) -> None:
+  def open_trading_session(self) -> bool:
     """ Opens a IG Group trading session.
         - Checks if previous session open.
         - Saves session details to JSON file for future use.
-        - Requests new session if expired or no previous session."""
-    # Checking if previous session.
-    if os.path.exists(os.getcwd() + "\\session_info.json"):
-      logger.info("Previous session recovered.")
-      # Open file and add headers.
-      logger.info("Opening JSON of previous session:")
-      with open("session_info.json", "r") as f:
-        json_storage = json.load(f)
-        self.header["Version"] = "1"
-        self.header["CST"] = json_storage["CST"]
-        self.header["X-SECURITY-TOKEN"] = json_storage["X-SECURITY-TOKEN"]
-        logger.info(f"  CST : {self.header['CST']}")
-        logger.info(f"  X-SECURITY-TOKEN : {self.header['X-SECURITY-TOKEN']}")
-
-    # Sending request.
+        - Requests new session if expired or no previous session.
+        
+        Returns boolean if response was successful or not."""
+    
+    # Sending standard request.
     logger.info("Requesting trading session.")
+    self.header["VERSION"] = "2"
     response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body))
-
     if response.ok:
-      logger.info("Trading session: APPROVED")
-
-      # Adding CST and Token to headers.
-      logger.info("Adding session tokens to header.")
       self.header["CST"] = response.headers["CST"]
       self.header["X-SECURITY-TOKEN"] = response.headers["X-SECURITY-TOKEN"]
-      logger.info(f"  CST : {self.header['CST']}")
-      logger.info(f"  X-SECURITY-TOKEN : {self.header['X-SECURITY-TOKEN']}")
-
-      # Saving information to json.
-      logger.info("Storing current session to JSON.")
-      json_storage = {}
-      json_storage["CST"] = self.header["CST"]
-      json_storage["X-SECURITY-TOKEN"] = self.header["X-SECURITY-TOKEN"]
-      json_storage = json.dumps(json_storage)
-      with open("session_info.json", "w") as f:
-        f.write(json_storage)
+      return True
     else:
-      logger.info("Trading session: NOT APPROVED")
+      return False
 
   def check_trading_session(self) -> bool:
     """ Checking if trading session active.
         Returns bool depending if session is open or not."""
     # Adjusting header.
-    self.header["Version"] = "1"
+    self.header["VERSION"] = "1"
     logger.info("Requesting active trading session.")
     response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","GET",headers=self.header)
     return response.ok
     
-  def close_trading_session(self) -> bool:
-    """ Close the active trading session.
-        Returns bool depending if response was valid."""
-    # Adjusting header.
-    self.header["Version"] = "1"
-    self.header["_method"] = "DELETE"
-    # Sending request.
-    logger.info("Requesting close trading session.")
-    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","PUT",headers=self.header)
-    # Resending request if invalid.
-    while not response.ok:
-      logger.info("Requesting close trading session.")
-      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","PUT",headers=self.header)
-    # Reverting header after.
-    del self.header["_method"]
-    return response.ok
-
   def get_watchlists_from_IG(self) -> dict:
     """ Getting all watchlists associated with the API key.
         Watchlists are directly from IG.
