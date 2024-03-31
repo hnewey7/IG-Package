@@ -34,7 +34,7 @@ class RequestHandler():
 
   def send_request(self,url,method,headers,data=None) -> requests.Response:
     """ Sending request to the API.
-        Requires url, method, headers and data."""
+        Requires url, method, headers, with optional data."""
     while time.time() - self.previous_request_time < self.period:
       time.sleep(self.period/10)
     else:
@@ -143,6 +143,8 @@ class IG():
     for watchlist in watchlists:
       if watchlist["name"] == name or watchlist["id"] == id:
         return watchlist
+    else:
+      raise ValueError
       
   def get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
     """ Getting a singular Watchlist object.
@@ -151,6 +153,8 @@ class IG():
     for watchlist in self.watchlists:
       if watchlist.name == name or watchlist.id == id:
         return watchlist
+    else:
+      return None
 
   def add_watchlist(self,name:str) -> Watchlist:
     """ Adding watchlist associated to relevant API key.
@@ -176,19 +180,24 @@ class IG():
       logger.info("Watchlist cannot be added, already exists.")
       return None
 
-  def del_watchlist(self,name:str=None,id:str=None) -> None:
+  def del_watchlist(self,name:str=None,id:str=None) -> Watchlist:
     """ Deleting watchlist associated to relevant API key.
         Returns Watchlist object."""
-    # Getting watchlist.
-    watchlist_IG = self.get_watchlist_from_IG(name=name,id=id)
-    watchlist_obj = self.get_watchlist_obj(name=name,id=id)
-    # Adjusting header.
-    self.header["Version"] = "1"
-    # Sending request.
-    logger.info(f"Requesting watchlist to be removed ({watchlist_IG['id']}).")
-    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(watchlist_IG["id"]),"DELETE",headers=self.header)
-    # Deleting watchlist object.
-    self.watchlists.remove(watchlist_obj)
+    try:
+      # Getting watchlist.
+      watchlist_IG = self.get_watchlist_from_IG(name=name,id=id)
+      watchlist_obj = self.get_watchlist_obj(name=name,id=id)
+      # Adjusting header.
+      self.header["Version"] = "1"
+      # Sending request.
+      logger.info(f"Requesting watchlist to be removed ({watchlist_IG['id']}).")
+      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(watchlist_IG["id"]),"DELETE",headers=self.header)
+      # Deleting watchlist object.
+      self.watchlists.remove(watchlist_obj)
+      return watchlist_obj
+    except:
+      logger.info("Watchlist could not be removed.")
+      return None
 
   def search_instrument(self,name:str):
     """ Search for instrument.
