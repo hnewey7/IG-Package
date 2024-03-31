@@ -15,8 +15,8 @@ from src.ig_package.IG_API_Details import get_username, get_password
 
 # - - - - - - - - - - - - - - - - -
 
-@pytest.mark.parametrize("expected_time", [(60 - i * 6) for i in range(10)])
-def test_IG_valid_connection(expected_time) -> None:
+@pytest.mark.parametrize("iteration", [i for i in range(10)])
+def test_IG_valid_connection(iteration) -> None:
   """ Testing whether IG object connects within certain amount of time."""
   # Initialising IG object.
   username = get_username()
