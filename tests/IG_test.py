@@ -66,4 +66,16 @@ def test_IG_get_watchlist() -> None:
     assert hasattr(watchlist,"name")
     assert hasattr(watchlist,"IG_obj")
     assert hasattr(watchlist,"markets")
-                 
+
+def test_IG_add_watchlist() -> None:
+  """ Testing adding watchlists through the IG object."""
+  # Initialising IG object.
+  username = get_username()
+  password = get_password()
+  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username=username,password=password,watchlist_enable=True)
+  # Creating watchlist.
+  watchlist = ig.add_watchlist("Test")
+  assert watchlist in ig.watchlists
+  # Creating watchlist with same name.
+  watchlist = ig.add_watchlist("Test")
+  assert watchlist == None
