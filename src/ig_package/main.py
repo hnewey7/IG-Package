@@ -6,6 +6,8 @@ Created on Tuesday 12th March 2024.
 
 '''
 
+from __future__ import annotations
+
 import requests
 import json
 import logging
@@ -31,7 +33,7 @@ class RequestHandler():
     self.period = period # Time period between each request.
     self.previous_request_time = time.time()
 
-  def send_request(self,url,method,headers,data=None):
+  def send_request(self,url,method,headers,data=None) -> requests.Response:
     """ Sending request to the API.
         Requires url, method, headers and data."""
     while time.time() - self.previous_request_time < self.period:
@@ -84,12 +86,7 @@ class IG():
 
   def open_trading_session(self) -> bool:
     """ Opens a IG Group trading session.
-        - Checks if previous session open.
-        - Saves session details to JSON file for future use.
-        - Requests new session if expired or no previous session.
-        
         Returns boolean if response was successful or not."""
-    
     # Sending standard request.
     logger.info("Requesting trading session.")
     self.header["VERSION"] = "2"
@@ -148,7 +145,7 @@ class IG():
       if watchlist["name"] == name or watchlist["id"] == id:
         return watchlist
       
-  def get_watchlist_obj(self,name:str=None,id:str=None):
+  def get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
     """ Getting a singular Watchlist object.
         Watchlist is a Python class.
         Returns the Watchlist object."""
@@ -156,7 +153,7 @@ class IG():
       if watchlist.name == name or watchlist.id == id:
         return watchlist
 
-  def add_watchlist(self,name:str):
+  def add_watchlist(self,name:str) -> Watchlist:
     """ Adding watchlist associated to relevant API key.
         Returns Watchlist object."""
     # Adjusting header.
@@ -175,8 +172,10 @@ class IG():
         return watchlist
       else:
         logger.info("New watchlist: DENIED")
+        return None
     else:
       logger.info("Watchlist cannot be added, already exists.")
+      return None
 
   def del_watchlist(self,name:str=None,id:str=None) -> None:
     """ Deleting watchlist associated to relevant API key.
