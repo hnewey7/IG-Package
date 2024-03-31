@@ -5,7 +5,6 @@ Created on Tuesday 12th March 2024.
 @author: Harry New
 
 '''
-
 from __future__ import annotations
 
 import requests
