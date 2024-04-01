@@ -20,7 +20,7 @@ def test_IG_valid_connection(iteration) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username=username,password=password)
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
   # Checking trading session.
   assert ig.check_trading_session()
   # Deleting object.
@@ -60,7 +60,7 @@ def test_IG_watchlist_enabled() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username=username,password=password,watchlist_enable=True)
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password,watchlist_enable=True)
   # Checking if watchlists available.
   assert ig.watchlists
   for watchlist in ig.watchlists:

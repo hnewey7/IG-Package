@@ -309,15 +309,17 @@ class Watchlist():
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request to delete instrument from watchlist.
-    logger.info(f"Requesting instrument to be removed ({instrument['epic']}) from watchlist ({self.id}).")
-    response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}/{}".format(self.id,instrument["epic"]),"DELETE",headers=self.IG_obj.header)
+    logger.info(f"Requesting instrument to be removed ({instrument.epic}) from watchlist ({self.id}).")
+    response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}/{}".format(self.id,instrument.epic),"DELETE",headers=self.IG_obj.header)
     # Updating markets.
-    self.markets = self.get_instruments()
+    self.markets = self.get_instrument_objects()
 
   def get_all_historical_data(self,resolution:str,start:str,end:str) -> dict:
     """ Gets all historical data from instruments contained within the watchlist.
         Requires resolution, start date and end data.
-        Returns a dictionary of all dataframes with the key being the instrument name."""
+        Returns a dictionary of all dataframes with the key being the instrument name.
+        
+        ***NOTE: Resolution is in format SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH ***"""
     # Creating dictionary to store all dataframes.
     df_dict = {}
     for instrument in self.markets:
