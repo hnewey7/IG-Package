@@ -7,7 +7,6 @@ Created on Sunday 24th March 2024.
 '''
 
 import pytest
-import time
 import requests
 from ig_package import IG
 
@@ -47,13 +46,13 @@ def test_IG_close_trading_session(iteration) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username=username,password=password)
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
   # Checking if valid session.
   assert ig.check_trading_session()
   # Deleting object.
   del ig
   
-def test_IG_get_watchlist() -> None:
+def test_IG_watchlist_enabled() -> None:
   """ Testing watchlists through the IG object.
         - Enables watchlist and checks valid attributes.
         - Adds watchlist, checks for return and null return when already present.
@@ -97,12 +96,38 @@ def test_IG_get_watchlist() -> None:
   watchlist = ig.del_watchlist("Test",id="837482489792uhs")
   assert watchlist == None
 
+def test_IG_watchlist_disabled() -> None:
+  """ Testing watchlist methods if disabled through IG object."""
+  # Initialising IG object.
+  username = get_username()
+  password = get_password()
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  
+  # Testing getting watchlists from IG.
+  watchlists_dict = ig.get_watchlists_from_IG()
+  assert watchlists_dict == None
+  # Testing getting watchlist objects.
+  watchlists = ig.get_watchlist_objs()
+  assert watchlists == None
+  # Testing getting single watchlist.
+  watchlist_dict = ig.get_watchlist_from_IG()
+  assert watchlist_dict == None
+  # Testing getting single watchlist object.
+  watchlist = ig.get_watchlist_obj()
+  assert watchlist == None
+  # Testing adding watchlist.
+  watchlist = ig.add_watchlist("Test")
+  assert watchlist == None
+  # Testing deleting watchlist.
+  watchlist = ig.del_watchlist("Test")
+  assert watchlist == None
+
 def test_IG_search_instrument() -> None:
   """ Testing searching an instrument through the IG object."""
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="378b35eaad23c3ba219e4e7b57a0c2f03a4e8bbd",username=username,password=password)
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
   # Searching for instrument.
   instrument = ig.search_instrument("FTSE100")
   assert hasattr(instrument,"IG_obj")

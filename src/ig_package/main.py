@@ -63,6 +63,7 @@ class IG():
       **NOTE: API key, username and password should be entered when initialising the IG object."""
 
   def __init__(self,API_key:str,username:str,password:str,watchlist_enable:bool=False) -> None:
+    self.watchlist_enable = watchlist_enable
     # Defining header.
     self.header = {
       "Content-Type":"application/json; charset=UTF-8",
@@ -110,94 +111,112 @@ class IG():
     """ Getting all watchlists associated with the API key.
         Watchlists are directly from IG.
         Returns list of IG watchlists."""
-    # Adjusting header.
-    self.header["Version"] = "1"
-    # Sending request.
-    logger.info("Requesting all watchlists associated with API key.")
-    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists","GET",headers=self.header)
-    if response.ok:
-      logger.info("All watchlists: APPROVED")
-      return json.loads(response.text)["watchlists"]
+    if self.watchlist_enable:
+      # Adjusting header.
+      self.header["Version"] = "1"
+      # Sending request.
+      logger.info("Requesting all watchlists associated with API key.")
+      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists","GET",headers=self.header)
+      if response.ok:
+        logger.info("All watchlists: APPROVED")
+        return json.loads(response.text)["watchlists"]
+      else:
+        logger.info("All watchlists: DENIED")
     else:
-      logger.info("All watchlists: DENIED")
+      logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
   
   def get_watchlist_objs(self) -> list:
     """ Getting watchlists within IG Obj directly from IG API.
         Returns list of watchlist objects."""
-    # Getting all watchlists from IG Group's API.
-    watchlists_IG = self.get_watchlists_from_IG()
-    # Creating Watchlist objects from list provided.
-    watchlist_objs = []
-    for watchlist_dict in watchlists_IG:
-      logger.info(f"Creating watchlist object from id ({watchlist_dict['id']}).")
-      watchlist_objs.append(Watchlist(watchlist_dict["id"],self))
-    return watchlist_objs
+    if self.watchlist_enable:
+      # Getting all watchlists from IG Group's API.
+      watchlists_IG = self.get_watchlists_from_IG()
+      # Creating Watchlist objects from list provided.
+      watchlist_objs = []
+      for watchlist_dict in watchlists_IG:
+        logger.info(f"Creating watchlist object from id ({watchlist_dict['id']}).")
+        watchlist_objs.append(Watchlist(watchlist_dict["id"],self))
+      return watchlist_objs
+    else:
+      logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
   def get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict:
     """ Getting a singular watchlist associated with the API key.
         Watchlist is directly from IG.
         Returns dictionary of IG watchlist."""
-    # Getting all watchlists.
-    watchlists = self.get_watchlists_from_IG()
+    if self.watchlist_enable:
+      # Getting all watchlists.
+      watchlists = self.get_watchlists_from_IG()
 
-    for watchlist in watchlists:
-      if watchlist["name"] == name or watchlist["id"] == id:
-        return watchlist
+      for watchlist in watchlists:
+        if watchlist["name"] == name or watchlist["id"] == id:
+          return watchlist
+      else:
+        raise ValueError
     else:
-      raise ValueError
+      logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
       
   def get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
     """ Getting a singular Watchlist object.
         Watchlist is a Python class.
         Returns the Watchlist object."""
-    for watchlist in self.watchlists:
-      if watchlist.name == name or watchlist.id == id:
-        return watchlist
+    if self.watchlist_enable:
+      for watchlist in self.watchlists:
+        if watchlist.name == name or watchlist.id == id:
+          return watchlist
+      else:
+        return None
     else:
-      return None
+      logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
   def add_watchlist(self,name:str) -> Watchlist:
     """ Adding watchlist associated to relevant API key.
         Returns Watchlist object."""
-    # Adjusting header.
-    self.header["Version"] = "1"
-    # Checking if watchlist already exists.
-    if not self.get_watchlist_obj(name):
-      # Sending request.
-      logger.info(f"Requesting new watchlist ({name}).")
-      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists","POST",headers=self.header,data=json.dumps({"name":name}))
-      if response.ok:
-        logger.info("New watchlist: APPROVED")
-        # Creating watchlist object.
-        watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
-        self.watchlists.append(watchlist)
+    if self.watchlist_enable:
+      # Adjusting header.
+      self.header["Version"] = "1"
+      # Checking if watchlist already exists.
+      if not self.get_watchlist_obj(name):
+        # Sending request.
+        logger.info(f"Requesting new watchlist ({name}).")
+        response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists","POST",headers=self.header,data=json.dumps({"name":name}))
+        if response.ok:
+          logger.info("New watchlist: APPROVED")
+          # Creating watchlist object.
+          watchlist = Watchlist(json.loads(response.text)["watchlistId"],self)
+          self.watchlists.append(watchlist)
 
-        return watchlist
+          return watchlist
+        else:
+          logger.info("New watchlist: DENIED")
+          return None
       else:
-        logger.info("New watchlist: DENIED")
+        logger.info("Watchlist cannot be added, already exists.")
         return None
     else:
-      logger.info("Watchlist cannot be added, already exists.")
-      return None
+      logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
   def del_watchlist(self,name:str=None,id:str=None) -> Watchlist:
     """ Deleting watchlist associated to relevant API key.
         Returns Watchlist object."""
-    try:
-      # Getting watchlist.
-      watchlist_IG = self.get_watchlist_from_IG(name=name,id=id)
-      watchlist_obj = self.get_watchlist_obj(name=name,id=id)
-      # Adjusting header.
-      self.header["Version"] = "1"
-      # Sending request.
-      logger.info(f"Requesting watchlist to be removed ({watchlist_IG['id']}).")
-      response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(watchlist_IG["id"]),"DELETE",headers=self.header)
-      # Deleting watchlist object.
-      self.watchlists.remove(watchlist_obj)
-      return watchlist_obj
-    except:
-      logger.info("Watchlist could not be removed.")
-      return None
+    if self.watchlist_enable:
+      try:
+        # Getting watchlist.
+        watchlist_IG = self.get_watchlist_from_IG(name=name,id=id)
+        watchlist_obj = self.get_watchlist_obj(name=name,id=id)
+        # Adjusting header.
+        self.header["Version"] = "1"
+        # Sending request.
+        logger.info(f"Requesting watchlist to be removed ({watchlist_IG['id']}).")
+        response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(watchlist_IG["id"]),"DELETE",headers=self.header)
+        # Deleting watchlist object.
+        self.watchlists.remove(watchlist_obj)
+        return watchlist_obj
+      except:
+        logger.info("Watchlist could not be removed.")
+        return None
+    else:
+      logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
   def search_instrument(self,name:str):
     """ Search for instrument.
@@ -260,12 +279,13 @@ class Watchlist():
     """ Gets instrument by name or epic.
         Returns dictionary with relevant instrument information."""
     for instrument in self.markets:
-      if instrument["instrumentName"] == name or instrument["epic"] == epic:
+      if instrument.name == name or instrument.epic == epic:
         return instrument
   
-  def add_instrument(self,instrument_name:str):
+  def add_instrument(self,instrument_name:str) -> str:
     """ Adding instrument to watchlist.
-        Updates watchlist markets attribute."""
+        Updates watchlist markets attribute.
+        Returns instrument epic."""
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request for instrument.
@@ -277,7 +297,8 @@ class Watchlist():
     logger.info(f"Adding top market ({top_instrument_epic}) to watchlist ({self.id})")
     response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),"PUT",headers=self.IG_obj.header,data=json.dumps({"epic":top_instrument_epic}))
     # Updating markets.
-    self.markets = self.get_instruments()
+    self.markets = self.get_instrument_objects()
+    return top_instrument_epic
 
   def del_instrument(self,instrument_name:str=None,epic:str=None):
     """ Deleting instrument from watchlist.
