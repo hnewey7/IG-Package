@@ -6,4 +6,4 @@ Created on Tuesday 12th March 2024.
 
 '''
 
-from .main import IG, Watchlist
+from .main import IG, Watchlist, Instrument
