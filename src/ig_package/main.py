@@ -6,6 +6,7 @@ Created on Tuesday 12th March 2024.
 
 '''
 from __future__ import annotations
+from typing import Union
 
 import requests
 import json
@@ -218,7 +219,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
-  def search_instrument(self,name:str):
+  def search_instrument(self,name:str) -> Instrument:
     """ Search for instrument.
         Requires string to search for.
         Returns top instrument that matches string provided."""
@@ -230,8 +231,10 @@ class IG():
     top_instrument_epic = instruments[0]["epic"]
     # Creating Instrument from epic.
     instrument = Instrument(top_instrument_epic,self)
-    return instrument
-
+    if instrument.success:
+      return instrument
+    else:
+      return None
 # - - - - - - - - - - - - - - - - - - - - -
     
 class Watchlist():
@@ -272,7 +275,8 @@ class Watchlist():
     # Creating list of instruments.
     instrument_objs = []
     for instrument in instruments_IG:
-      instrument_objs.append(Instrument(instrument["epic"],self.IG_obj))
+      new_instrument = Instrument(instrument["epic"],self.IG_obj)
+      instrument_objs.append(new_instrument) if new_instrument else None
     return instrument_objs
   
   def get_instrument(self,name:str=None,epic:str=None) -> dict:
@@ -334,20 +338,28 @@ class Instrument():
         - Allows for collection of historical data."""
   
   def __init__(self,epic:str,IG_obj:IG) -> None:
-    self.IG_obj = IG_obj
-    # Adjusting header.
-    self.IG_obj.header["Version"] = "1"
-    # Sending request with epic to receive market details.
-    logger.info(f"Requesting instrument details ({epic}).")
-    response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/markets/{}".format(epic),"GET",headers=self.IG_obj.header)
+    try:
+      self.IG_obj = IG_obj
+      # Adjusting header.
+      self.IG_obj.header["Version"] = "1"
+      # Sending request with epic to receive market details.
+      logger.info(f"Requesting instrument details ({epic}).")
+      response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/markets/{}".format(epic),"GET",headers=self.IG_obj.header)
 
-    instrument_details = json.loads(response.text)["instrument"]
-    self.epic = instrument_details["epic"]
-    self.name = instrument_details["name"]
-    self.lot_size = instrument_details["lotSize"]
-    self.type = instrument_details["type"]
-    self.market_id = instrument_details["marketId"]
-    self.margin = instrument_details["margin"]
+      if response.ok:
+        instrument_details = json.loads(response.text)["instrument"]
+        self.success = True
+        self.epic = instrument_details["epic"]
+        self.name = instrument_details["name"]
+        self.lot_size = instrument_details["lotSize"]
+        self.type = instrument_details["type"]
+        self.market_id = instrument_details["marketId"]
+        self.margin = instrument_details["margin"]
+      else:
+        self.success = False
+    except:
+      logger.info("Failed to get instrument.")
+      self.success = False
 
   def get_historical_prices(self,resolution:str,start:str,end:str) -> pd.DataFrame:
     """ Getting historical price data for the instrument from IG API.
