@@ -69,6 +69,11 @@ def test_IG_watchlist_enabled() -> None:
     assert hasattr(watchlist,"IG_obj")
     assert hasattr(watchlist,"markets")
 
+  # Checking if watchlist exists.
+  for watchlist in ig.watchlists:
+    if watchlist.name == "Test":
+      ig.del_watchlist(name=watchlist.name)
+      
   # Creating watchlist.
   watchlist = ig.add_watchlist("Test")
   assert watchlist in ig.watchlists
