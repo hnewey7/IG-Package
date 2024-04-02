@@ -369,6 +369,11 @@ class Instrument():
     self.IG_obj.header["Version"] = "1"
     # Requesting historical price data.
     response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/prices/{}/{}?startdate={}&enddate={}".format(self.epic,resolution,start,end),"GET",headers=self.IG_obj.header)
+    
+    # Checking if token allowance exceeded.
+    if response.status_code == "403":
+      logger.info("Unable to get historical data.")
+      return None
     # Formatting data.
     all_data = []
     for price in json.loads(response.text)["prices"]:
