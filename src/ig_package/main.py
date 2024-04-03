@@ -146,14 +146,14 @@ class IG():
         Watchlist is directly from IG.
         Returns dictionary of IG watchlist."""
     if self.watchlist_enable:
-      # Getting all watchlists.
-      watchlists = self._get_watchlists_from_IG()
-
-      for watchlist in watchlists:
-        if watchlist["name"] == name or watchlist["id"] == id:
-          return watchlist
+      # Getting all watchlists from IG.
+      watchlists_dict = self._get_watchlists_from_IG()
+      # Filtering for specific watchlist.
+      for watchlist_dict in watchlists_dict:
+        if watchlist_dict["name"] == name or watchlist_dict["id"] == id:
+          return watchlist_dict
       else:
-        raise ValueError
+        logger.info("Watchlist could not be found.")
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
       
