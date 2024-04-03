@@ -10,7 +10,7 @@ This project is a fully functional package that allows easy interaction with IG 
 * Managing watchlists.
 * Closing trading sessions.
 
-![screenshot](IG_Package_UML.png)
+![screenshot](./images/class_diagram.png)
 
 ## How to utilise this package
 
@@ -26,7 +26,7 @@ The classes within this package are based on the functionaliy of IG Group's REST
 
 The three main classes: IG, Watchlist and Instrument, are all defined in [main.py](/IG/main.py) and functions can be easily added to each of them.
 
-If any new classes have been defined then remember to import the new classes into [init.py](/IG/__init__.py). This allows users to import the classes directly from the package.
+If any new classes have been defined then remember to import the new classes into [\_\_init__.py](/IG/__init__.py). This allows users to import the classes directly from the package.
 
 ## Fixing bugs
 
