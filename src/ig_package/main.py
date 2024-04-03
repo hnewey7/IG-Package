@@ -29,11 +29,11 @@ class _RequestHandler():
         - Ensures response is successful.
         - Limits requests sent."""
   
-  def __init__(self,period) -> None:
+  def __init__(self,period:int) -> None:
     self.period = period # Time period between each request.
     self.previous_request_time = time.time()
 
-  def send_request(self,url,method,headers,data=None) -> requests.Response:
+  def send_request(self,url:str,method:str,headers:dict,data:dict=None) -> requests.Response:
     """ Sending request to the API.
         Requires url, method, headers, with optional data."""
     while time.time() - self.previous_request_time < self.period:
@@ -304,7 +304,7 @@ class Watchlist():
     self.markets = self._get_instrument_objects()
     return top_instrument_epic
 
-  def del_instrument(self,instrument_name:str=None,epic:str=None):
+  def del_instrument(self,instrument_name:str=None,epic:str=None) -> None:
     """ Deleting instrument from watchlist.
         Takes instrument name and searches watchlist for it.
         Updates watchlist markets attribute."""
