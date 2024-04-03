@@ -35,7 +35,22 @@ class _RequestHandler():
 
   def send_request(self,url:str,method:str,headers:dict,data:dict=None) -> requests.Response:
     """ Sending request to the API.
-        Requires url, method, headers, with optional data."""
+        
+        Parameters
+        ----------
+        url: str
+          URL for the REST API request.
+        method: str
+          Type of method for the request e.g. "GET", "POST", "PUT" or "DELETE".
+        headers: dict
+          Dictionary containing details of the trading session.
+        data: dict (OPTIONAL)
+          Dictionary containing additional data for request if required.
+        
+        Returns
+        -------
+        requests.Response
+          Response object from the API request."""
     while time.time() - self.previous_request_time < self.period:
       time.sleep(self.period/10)
     else:
@@ -87,7 +102,11 @@ class IG():
 
   def open_trading_session(self) -> bool:
     """ Opens a IG Group trading session.
-        Returns boolean if response was successful or not."""
+
+        Returns
+        -------
+        bool
+          Boolean if response was successful or not."""
     # Sending standard request.
     logger.info("Requesting trading session.")
     self.header["VERSION"] = "2"
@@ -101,7 +120,11 @@ class IG():
 
   def check_trading_session(self) -> bool:
     """ Checking if trading session active.
-        Returns bool depending if session is open or not."""
+
+        Returns
+        -------
+        bool
+          Boolean depending if trading session is open or not."""
     # Adjusting header.
     self.header["VERSION"] = "1"
     logger.info("Requesting active trading session.")
@@ -111,7 +134,11 @@ class IG():
   def _get_watchlists_from_IG(self) -> dict:
     """ Getting all watchlists associated with the API key.
         Watchlists are directly from IG.
-        Returns list of IG watchlists."""
+
+        Returns 
+        -------
+        dict
+          Dictionary of IG watchlists."""
     if self.watchlist_enable:
       # Adjusting header.
       self.header["Version"] = "1"
@@ -126,9 +153,13 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
   
-  def _get_watchlist_objs(self) -> list:
+  def _get_watchlist_objs(self) -> list[Watchlist]:
     """ Getting watchlists within IG Obj directly from IG API.
-        Returns list of watchlist objects."""
+
+        Returns
+        -------
+        list[Watchlist] 
+          List of Watchlist objects."""
     if self.watchlist_enable:
       # Getting all watchlists from IG Group's API.
       watchlists_IG = self._get_watchlists_from_IG()
@@ -144,7 +175,18 @@ class IG():
   def _get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict:
     """ Getting a singular watchlist associated with the API key.
         Watchlist is directly from IG.
-        Returns dictionary of IG watchlist."""
+
+        Parameters
+        ----------
+        name: str = None (OPTIONAL)
+          Name of the watchlist.
+        id: str = None  (OPTIONAL)
+          ID of the watchlist.
+
+        Returns
+        -------
+        dict
+          Dictionary of IG watchlist."""
     if self.watchlist_enable:
       # Getting all watchlists from IG.
       watchlists_dict = self._get_watchlists_from_IG()
@@ -159,8 +201,18 @@ class IG():
       
   def _get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
     """ Getting a singular Watchlist object.
-        Watchlist is a Python class.
-        Returns the Watchlist object."""
+
+        Parameters
+        ----------
+        name: str = None (OPTIONAL)
+          Name of the watchlist.
+        id: str = None  (OPTIONAL)
+          ID of the watchlist.
+
+        Returns
+        -------
+        Watchlist
+          Watchlist with corresponding name or id."""
     if self.watchlist_enable:
       for watchlist in self.watchlists:
         if watchlist.name == name or watchlist.id == id:
@@ -172,7 +224,16 @@ class IG():
 
   def add_watchlist(self,name:str) -> Watchlist:
     """ Adding watchlist associated to relevant API key.
-        Returns Watchlist object."""
+
+        Parameters
+        ----------
+        name: str
+          Name of the watchlist to be created.
+        
+        Returns 
+        -------
+        Watchlist
+          Watchlist object created."""
     if self.watchlist_enable:
       # Adjusting header.
       self.header["Version"] = "1"
@@ -199,7 +260,18 @@ class IG():
 
   def del_watchlist(self,name:str=None,id:str=None) -> Watchlist:
     """ Deleting watchlist associated to relevant API key.
-        Returns Watchlist object."""
+
+        Parameters
+        ----------
+        name: str=None (OPTIONAL)
+          Name of the watchlist to be deleted.
+        id: str=None (OPTIONAL)
+          ID of the watchlist to be deleted.
+        
+        Returns
+        -------
+        Watchlist
+          Wacthlist object that was deleted."""
     if self.watchlist_enable:
       try:
         # Getting watchlist.
@@ -221,8 +293,17 @@ class IG():
 
   def search_instrument(self,name:str) -> Instrument:
     """ Search for instrument.
-        Requires string to search for.
-        Returns top instrument that matches string provided."""
+        Gets the closest instrument to the inputted string.
+
+        Parameters
+        ----------
+        name: str
+          Name of instrument to be searched for.
+        
+        Returns
+        -------
+        Instrument
+          Instrument object of the top match to the inputted string."""
     # Searching for instrument.
     self.header["Version"] = "1"
     logger.info(f"Requesting search for market ({name}).")
@@ -255,7 +336,11 @@ class Watchlist():
 
   def _get_instruments_IG(self) -> list:
     """ Getting financial instruments held within the watchlist from the IG API.
-        Returns list of markets stored within watchlist."""
+
+        Returns
+        -------
+        list
+          List of markets stored within watchlist."""
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request.
@@ -269,7 +354,11 @@ class Watchlist():
 
   def _get_instrument_objects(self) -> list:
     """ Getting instrument objects of all instruments within the watchlist.
-        Returns list of instrument objects."""
+
+        Returns
+        -------
+        list
+          List of Instrument objects within Watchlist."""
     # Getting instruments from IG.
     instruments_IG = self._get_instruments_IG()
     # Creating list of instruments.
@@ -281,7 +370,18 @@ class Watchlist():
   
   def _get_instrument(self,name:str=None,epic:str=None) -> dict:
     """ Gets instrument by name or epic.
-        Returns dictionary with relevant instrument information."""
+
+        Parameters
+        ----------
+        name: str=None (OPTIONAL)
+          Name of the Instrument.
+        epic: str=None (OPTIONAL)
+          Epic of the Instrument.
+
+        Returns
+        -------
+        dict
+          Dictionary with relevant instrument information."""
     for instrument in self.markets:
       if instrument.name == name or instrument.epic == epic:
         return instrument
@@ -289,7 +389,16 @@ class Watchlist():
   def add_instrument(self,instrument_name:str) -> str:
     """ Adding instrument to watchlist.
         Updates watchlist markets attribute.
-        Returns instrument epic."""
+
+        Parameters
+        ----------
+        instrument_name: str
+          Name of instrument to be added.
+        
+        Returns
+        -------
+        str
+          Instrument epic."""
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request for instrument.
@@ -307,7 +416,14 @@ class Watchlist():
   def del_instrument(self,instrument_name:str=None,epic:str=None) -> None:
     """ Deleting instrument from watchlist.
         Takes instrument name and searches watchlist for it.
-        Updates watchlist markets attribute."""
+        Updates watchlist markets attribute.
+        
+        Parameters
+        ----------
+        instrument_name: str=None (OPTIONAL)
+          Name of instrument to be deleted.
+        epic: str=None (OPTIONAL)
+          Epic of instrument to be deleted."""
     # Getting instrument.
     instrument = self._get_instrument(instrument_name,epic)
     # Adjusting header.
@@ -320,10 +436,20 @@ class Watchlist():
 
   def get_all_historical_data(self,resolution:str,start:str,end:str) -> dict:
     """ Gets all historical data from instruments contained within the watchlist.
-        Requires resolution, start date and end data.
-        Returns a dictionary of all dataframes with the key being the instrument name.
+
+        Parameters
+        ----------
+        resolution: str
+          Resolution of the historical data e.g. SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH.
+        start: str
+          Start date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+        end: str
+          End date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
         
-        ***NOTE: Resolution is in format SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH ***"""
+        Returns
+        -------
+        dict
+          Dictionary of all dataframes with the key being the instrument name."""
     # Creating dictionary to store all dataframes.
     df_dict = {}
     for instrument in self.markets:
@@ -363,8 +489,20 @@ class Instrument():
 
   def get_historical_prices(self,resolution:str,start:str,end:str) -> pd.DataFrame:
     """ Getting historical price data for the instrument from IG API.
-        Requires resolution, start date and end date.
-        Returns pandas dataframe containing Date, Open, High, Low and Close data."""
+
+        Parameters
+        ----------
+        resolution: str
+          Resolution of the historical data e.g. SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH.
+        start: str
+          Start date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+        end: str
+          End date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+        
+        Returns
+        -------
+        pd.DataFrame
+          Dataframe containing Date (INDEX), Open, High, Low and Close data."""
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Requesting historical price data.
