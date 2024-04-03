@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-04-03T18:01:26.845Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="D44Lzkftugab8bB0bXLR" version="21.3.8" type="device">
+<mxfile host="app.diagrams.net" modified="2024-04-03T20:51:14.197Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" etag="VXfry0_Wit6trCtPowqA" version="21.3.8" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="2402" dy="806" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1547" dy="369" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -13,7 +13,7 @@
         <mxCell id="P-mM9i315hmfskEoi6Ls-2" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-0">
           <mxGeometry y="110" width="320" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="P-mM9i315hmfskEoi6Ls-3" value="+ open_trading_session() -&amp;gt; bool&lt;br&gt;+ check_trading_session() -&amp;gt; bool&lt;br&gt;+ add_watchlist(name:str) -&amp;gt; Watchlist&lt;br&gt;+ del_watchlist(name:str=None, id:str=None) -&amp;gt; Watchlist&lt;br&gt;+ search_instrument(name:str) -&amp;gt; Instrument" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-0">
+        <mxCell id="P-mM9i315hmfskEoi6Ls-3" value="+ open_trading_session(): bool&lt;br&gt;+ check_trading_session(): bool&lt;br&gt;+ add_watchlist(name:str): Watchlist&lt;br&gt;+ del_watchlist(name:str=None, id:str=None): Watchlist&lt;br&gt;+ search_instrument(name:str): Instrument" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-0">
           <mxGeometry y="118" width="320" height="92" as="geometry" />
         </mxCell>
         <mxCell id="P-mM9i315hmfskEoi6Ls-6" value="_RequestHandler(period:int)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#a20025;strokeColor=#6F0000;fontColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
@@ -25,7 +25,7 @@
         <mxCell id="P-mM9i315hmfskEoi6Ls-8" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-6">
           <mxGeometry y="70" width="210" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="P-mM9i315hmfskEoi6Ls-9" value="+ send_request(url:str, method:str, headers:dict, data:dict=None) -&amp;gt; requests.Response" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-6">
+        <mxCell id="P-mM9i315hmfskEoi6Ls-9" value="+ send_request(url:str, method:str, headers:dict, data:dict=None): requests.Response" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-6">
           <mxGeometry y="78" width="210" height="62" as="geometry" />
         </mxCell>
         <mxCell id="P-mM9i315hmfskEoi6Ls-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="P-mM9i315hmfskEoi6Ls-1" target="P-mM9i315hmfskEoi6Ls-6">
@@ -40,7 +40,7 @@
         <mxCell id="P-mM9i315hmfskEoi6Ls-13" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-11">
           <mxGeometry y="100" width="270" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="P-mM9i315hmfskEoi6Ls-14" value="+ add_instrument(instrument_name: str) -&amp;gt; str&lt;br&gt;+ del_instrument(instrument_name:str=None, epic:str=None) -&amp;gt; None&lt;br&gt;+ get_all_historical_data(resolution:str, start:str, end:str) -&amp;gt; dict" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-11">
+        <mxCell id="P-mM9i315hmfskEoi6Ls-14" value="+ add_instrument(instrument_name: str): str&lt;br&gt;+ del_instrument(instrument_name:str=None, epic:str=None): None&lt;br&gt;+ get_all_historical_data(resolution:str, start:str, end:str): dict" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-11">
           <mxGeometry y="108" width="270" height="92" as="geometry" />
         </mxCell>
         <mxCell id="P-mM9i315hmfskEoi6Ls-17" value="Instrument(epic:str, IG_obj:IG)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
@@ -52,7 +52,7 @@
         <mxCell id="P-mM9i315hmfskEoi6Ls-19" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-17">
           <mxGeometry y="160" width="270" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="P-mM9i315hmfskEoi6Ls-20" value="+ get_historical_prices(resolution:str, start:str, end:str) -&amp;gt; pd.DataFrame" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-17">
+        <mxCell id="P-mM9i315hmfskEoi6Ls-20" value="+ get_historical_prices(resolution:str, start:str, end:str): pd.DataFrame" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="P-mM9i315hmfskEoi6Ls-17">
           <mxGeometry y="168" width="270" height="42" as="geometry" />
         </mxCell>
         <mxCell id="P-mM9i315hmfskEoi6Ls-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.469;entryY=0.014;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="P-mM9i315hmfskEoi6Ls-3" target="P-mM9i315hmfskEoi6Ls-17">
