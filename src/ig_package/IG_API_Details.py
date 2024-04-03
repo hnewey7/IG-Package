@@ -29,3 +29,9 @@ def get_header():
 
 def get_body():
   return body
+
+def get_username():
+  return body["identifier"]
+
+def get_password():
+  return body["password"]

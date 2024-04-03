@@ -22,7 +22,7 @@ def test_watchlist_init() -> None:
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig.get_watchlists_from_IG()
+  watchlists_dict = ig._get_watchlists_from_IG()
 
   # Testing single watchlist.
   watchlist = Watchlist(watchlists_dict[0]["id"],ig)
@@ -40,7 +40,7 @@ def test_watchlist_get_instruments() -> None:
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig.get_watchlists_from_IG()
+  watchlists_dict = ig._get_watchlists_from_IG()
   # Getting single watchlist.
   watchlist = Watchlist(watchlists_dict[0]["id"],ig)
 
@@ -62,17 +62,17 @@ def test_watchlist_get_instrument() -> None:
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig.get_watchlists_from_IG()
+  watchlists_dict = ig._get_watchlists_from_IG()
   # Getting single watchlist.
   watchlist = Watchlist(watchlists_dict[1]["id"],ig)
 
   # Testing getting single instrument.
   instrument = watchlist.markets[0]
-  test_instrument = watchlist.get_instrument(name=instrument.name)
+  test_instrument = watchlist._get_instrument(name=instrument.name)
   assert test_instrument != None
-  test_instrument = watchlist.get_instrument(epic=instrument.epic)
+  test_instrument = watchlist._get_instrument(epic=instrument.epic)
   assert test_instrument != None
-  test_instrument = watchlist.get_instrument(name=instrument.name,epic=instrument.epic)
+  test_instrument = watchlist._get_instrument(name=instrument.name,epic=instrument.epic)
   assert test_instrument != None
 
 def test_watchlist_adding_removing_instrument() -> None:
@@ -84,13 +84,13 @@ def test_watchlist_adding_removing_instrument() -> None:
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig.get_watchlists_from_IG()
+  watchlists_dict = ig._get_watchlists_from_IG()
   # Getting single watchlist.
   watchlist = Watchlist(watchlists_dict[1]["id"],ig)
 
   # Testing adding instrument.
   instrument_epic = watchlist.add_instrument("FTSE100")
-  instrument = watchlist.get_instrument(epic=instrument_epic)
+  instrument = watchlist._get_instrument(epic=instrument_epic)
   assert instrument in watchlist.markets
 
   # Testing removing instrument through name.
@@ -98,12 +98,12 @@ def test_watchlist_adding_removing_instrument() -> None:
   assert instrument not in watchlist.markets
   # Testing removing instrument through epic.
   instrument_epic = watchlist.add_instrument(instrument_name="FTSE100")
-  instrument = watchlist.get_instrument(epic=instrument_epic)
+  instrument = watchlist._get_instrument(epic=instrument_epic)
   watchlist.del_instrument(epic=instrument.epic)
   assert instrument not in watchlist.markets
   # Testing removing instrument when both name and epic provided.
   instrument_epic = watchlist.add_instrument(instrument_name="FTSE100")
-  instrument = watchlist.get_instrument(epic=instrument_epic)
+  instrument = watchlist._get_instrument(epic=instrument_epic)
   watchlist.del_instrument(instrument_name=instrument.name,epic=instrument.epic)
   assert instrument not in watchlist.markets
 
@@ -121,7 +121,7 @@ def test_watchlist_historical_data(resolution,start,end) -> None:
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig.get_watchlists_from_IG()
+  watchlists_dict = ig._get_watchlists_from_IG()
   # Getting single watchlist.
   watchlist = Watchlist(watchlists_dict[1]["id"],ig)
 

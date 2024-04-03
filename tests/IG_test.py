@@ -109,16 +109,16 @@ def test_IG_watchlist_disabled() -> None:
   ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
   
   # Testing getting watchlists from IG.
-  watchlists_dict = ig.get_watchlists_from_IG()
+  watchlists_dict = ig._get_watchlists_from_IG()
   assert watchlists_dict == None
   # Testing getting watchlist objects.
-  watchlists = ig.get_watchlist_objs()
+  watchlists = ig._get_watchlist_objs()
   assert watchlists == None
   # Testing getting single watchlist.
-  watchlist_dict = ig.get_watchlist_from_IG()
+  watchlist_dict = ig._get_watchlist_from_IG()
   assert watchlist_dict == None
   # Testing getting single watchlist object.
-  watchlist = ig.get_watchlist_obj()
+  watchlist = ig._get_watchlist_obj()
   assert watchlist == None
   # Testing adding watchlist.
   watchlist = ig.add_watchlist("Test")

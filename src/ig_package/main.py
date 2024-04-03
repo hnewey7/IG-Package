@@ -24,7 +24,7 @@ logger = logging.getLogger()
 
 # - - - - - - - - - - - - - - - - - - - - -
 
-class RequestHandler():
+class _RequestHandler():
   """ Object for handling all requests sent to the IG API.
         - Ensures response is successful.
         - Limits requests sent."""
@@ -78,12 +78,12 @@ class IG():
       "password":password
     }
     # Initialising request handler.
-    self.request_handler = RequestHandler(2)
+    self.request_handler = _RequestHandler(2)
     # Opening trading session.
     response_successful = self.open_trading_session()
     # Getting all watchlists.
     if watchlist_enable and response_successful:
-      self.watchlists = self.get_watchlist_objs()
+      self.watchlists = self._get_watchlist_objs()
 
   def open_trading_session(self) -> bool:
     """ Opens a IG Group trading session.
@@ -108,7 +108,7 @@ class IG():
     response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","GET",headers=self.header)
     return response.ok
     
-  def get_watchlists_from_IG(self) -> dict:
+  def _get_watchlists_from_IG(self) -> dict:
     """ Getting all watchlists associated with the API key.
         Watchlists are directly from IG.
         Returns list of IG watchlists."""
@@ -126,12 +126,12 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
   
-  def get_watchlist_objs(self) -> list:
+  def _get_watchlist_objs(self) -> list:
     """ Getting watchlists within IG Obj directly from IG API.
         Returns list of watchlist objects."""
     if self.watchlist_enable:
       # Getting all watchlists from IG Group's API.
-      watchlists_IG = self.get_watchlists_from_IG()
+      watchlists_IG = self._get_watchlists_from_IG()
       # Creating Watchlist objects from list provided.
       watchlist_objs = []
       for watchlist_dict in watchlists_IG:
@@ -141,13 +141,13 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
-  def get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict:
+  def _get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict:
     """ Getting a singular watchlist associated with the API key.
         Watchlist is directly from IG.
         Returns dictionary of IG watchlist."""
     if self.watchlist_enable:
       # Getting all watchlists.
-      watchlists = self.get_watchlists_from_IG()
+      watchlists = self._get_watchlists_from_IG()
 
       for watchlist in watchlists:
         if watchlist["name"] == name or watchlist["id"] == id:
@@ -157,7 +157,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
       
-  def get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
+  def _get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
     """ Getting a singular Watchlist object.
         Watchlist is a Python class.
         Returns the Watchlist object."""
@@ -177,7 +177,7 @@ class IG():
       # Adjusting header.
       self.header["Version"] = "1"
       # Checking if watchlist already exists.
-      if not self.get_watchlist_obj(name):
+      if not self._get_watchlist_obj(name):
         # Sending request.
         logger.info(f"Requesting new watchlist ({name}).")
         response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists","POST",headers=self.header,data=json.dumps({"name":name}))
@@ -203,8 +203,8 @@ class IG():
     if self.watchlist_enable:
       try:
         # Getting watchlist.
-        watchlist_IG = self.get_watchlist_from_IG(name=name,id=id)
-        watchlist_obj = self.get_watchlist_obj(name=name,id=id)
+        watchlist_IG = self._get_watchlist_from_IG(name=name,id=id)
+        watchlist_obj = self._get_watchlist_obj(name=name,id=id)
         # Adjusting header.
         self.header["Version"] = "1"
         # Sending request.
@@ -246,14 +246,14 @@ class Watchlist():
     # Adapting header.
     IG_obj.header["Version"] = "1"
     # Getting watchlist from IG API.
-    watchlist_dict = IG_obj.get_watchlist_from_IG(id=id)
+    watchlist_dict = IG_obj._get_watchlist_from_IG(id=id)
     
     self.id = watchlist_dict["id"]
     self.name = watchlist_dict["name"]
     self.IG_obj = IG_obj
-    self.markets = self.get_instrument_objects()
+    self.markets = self._get_instrument_objects()
 
-  def get_instruments_IG(self) -> list:
+  def _get_instruments_IG(self) -> list:
     """ Getting financial instruments held within the watchlist from the IG API.
         Returns list of markets stored within watchlist."""
     # Adjusting header.
@@ -267,11 +267,11 @@ class Watchlist():
     else:
       logger.info("All instruments: DENIED.")
 
-  def get_instrument_objects(self) -> list:
+  def _get_instrument_objects(self) -> list:
     """ Getting instrument objects of all instruments within the watchlist.
         Returns list of instrument objects."""
     # Getting instruments from IG.
-    instruments_IG = self.get_instruments_IG()
+    instruments_IG = self._get_instruments_IG()
     # Creating list of instruments.
     instrument_objs = []
     for instrument in instruments_IG:
@@ -279,7 +279,7 @@ class Watchlist():
       instrument_objs.append(new_instrument) if new_instrument else None
     return instrument_objs
   
-  def get_instrument(self,name:str=None,epic:str=None) -> dict:
+  def _get_instrument(self,name:str=None,epic:str=None) -> dict:
     """ Gets instrument by name or epic.
         Returns dictionary with relevant instrument information."""
     for instrument in self.markets:
@@ -301,7 +301,7 @@ class Watchlist():
     logger.info(f"Adding top market ({top_instrument_epic}) to watchlist ({self.id})")
     response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),"PUT",headers=self.IG_obj.header,data=json.dumps({"epic":top_instrument_epic}))
     # Updating markets.
-    self.markets = self.get_instrument_objects()
+    self.markets = self._get_instrument_objects()
     return top_instrument_epic
 
   def del_instrument(self,instrument_name:str=None,epic:str=None):
@@ -309,14 +309,14 @@ class Watchlist():
         Takes instrument name and searches watchlist for it.
         Updates watchlist markets attribute."""
     # Getting instrument.
-    instrument = self.get_instrument(instrument_name,epic)
+    instrument = self._get_instrument(instrument_name,epic)
     # Adjusting header.
     self.IG_obj.header["Version"] = "1"
     # Sending request to delete instrument from watchlist.
     logger.info(f"Requesting instrument to be removed ({instrument.epic}) from watchlist ({self.id}).")
     response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}/{}".format(self.id,instrument.epic),"DELETE",headers=self.IG_obj.header)
     # Updating markets.
-    self.markets = self.get_instrument_objects()
+    self.markets = self._get_instrument_objects()
 
   def get_all_historical_data(self,resolution:str,start:str,end:str) -> dict:
     """ Gets all historical data from instruments contained within the watchlist.
