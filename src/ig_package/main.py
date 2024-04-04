@@ -224,6 +224,7 @@ class IG():
 
   def add_watchlist(self,name:str) -> Watchlist | None:
     """ Adding watchlist associated to relevant API key.
+        ***NOTE: IG object must have watchlist enabled to use this.***
 
         Parameters
         ----------
@@ -260,7 +261,8 @@ class IG():
 
   def del_watchlist(self,name:str=None,id:str=None) -> Watchlist | None:
     """ Deleting watchlist associated to relevant API key.
-
+        ***NOTE: IG object must have watchlist enabled to use this.***
+        
         Parameters
         ----------
         name: str=None (OPTIONAL)
