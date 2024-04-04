@@ -131,7 +131,7 @@ class IG():
     response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","GET",headers=self.header)
     return response.ok
     
-  def _get_watchlists_from_IG(self) -> dict:
+  def _get_watchlists_from_IG(self) -> dict | None:
     """ Getting all watchlists associated with the API key.
         Watchlists are directly from IG.
 
@@ -153,7 +153,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
   
-  def _get_watchlist_objs(self) -> list[Watchlist]:
+  def _get_watchlist_objs(self) -> list[Watchlist] | None:
     """ Getting watchlists within IG Obj directly from IG API.
 
         Returns
@@ -172,7 +172,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
-  def _get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict:
+  def _get_watchlist_from_IG(self,name:str=None,id:str=None) -> dict | None:
     """ Getting a singular watchlist associated with the API key.
         Watchlist is directly from IG.
 
@@ -199,7 +199,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
       
-  def _get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist:
+  def _get_watchlist_obj(self,name:str=None,id:str=None) -> Watchlist | None:
     """ Getting a singular Watchlist object.
 
         Parameters
@@ -222,7 +222,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
-  def add_watchlist(self,name:str) -> Watchlist:
+  def add_watchlist(self,name:str) -> Watchlist | None:
     """ Adding watchlist associated to relevant API key.
 
         Parameters
@@ -258,7 +258,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
-  def del_watchlist(self,name:str=None,id:str=None) -> Watchlist:
+  def del_watchlist(self,name:str=None,id:str=None) -> Watchlist | None:
     """ Deleting watchlist associated to relevant API key.
 
         Parameters
@@ -291,7 +291,7 @@ class IG():
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
-  def search_instrument(self,name:str) -> Instrument:
+  def search_instrument(self,name:str) -> Instrument | None:
     """ Search for instrument.
         Gets the closest instrument to the inputted string.
 
@@ -334,7 +334,7 @@ class Watchlist():
     self.IG_obj = IG_obj
     self.markets = self._get_instrument_objects()
 
-  def _get_instruments_IG(self) -> list:
+  def _get_instruments_IG(self) -> list | None:
     """ Getting financial instruments held within the watchlist from the IG API.
 
         Returns
@@ -368,7 +368,7 @@ class Watchlist():
       instrument_objs.append(new_instrument) if new_instrument else None
     return instrument_objs
   
-  def _get_instrument(self,name:str=None,epic:str=None) -> dict:
+  def _get_instrument(self,name:str=None,epic:str=None) -> dict | None:
     """ Gets instrument by name or epic.
 
         Parameters
@@ -487,7 +487,7 @@ class Instrument():
       logger.info("Failed to get instrument.")
       self.success = False
 
-  def get_historical_prices(self,resolution:str,start:str,end:str) -> pd.DataFrame:
+  def get_historical_prices(self,resolution:str,start:str,end:str) -> pd.DataFrame | None:
     """ Getting historical price data for the instrument from IG API.
 
         Parameters
