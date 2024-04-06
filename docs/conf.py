@@ -31,8 +31,7 @@ extensions = [
     "myst_nb",
     "autoapi.extension",
     "sphinx.ext.napoleon",
-    "sphinx.ext.viewcode",
-    "sphinxcontrib.imageembed"
+    "sphinx.ext.viewcode"
 ]
 autoapi_dirs = ["../src/ig_package"]
 autoapi_ignore = ["*IG_API_Details*"]
