@@ -10,7 +10,7 @@ This project is a fully functional package that allows easy interaction with IG 
 * Managing watchlists.
 * Closing trading sessions.
 
-![screenshot](./images/class_diagram.png)
+![Class diagram](class_diagram.png)
 
 ## How to utilise this package
 

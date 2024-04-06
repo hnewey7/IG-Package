@@ -18,7 +18,6 @@ Submodules
    :titlesonly:
    :maxdepth: 1
 
-   IG_API_Details/index.rst
    main/index.rst
 
 

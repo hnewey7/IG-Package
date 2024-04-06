@@ -31,9 +31,11 @@ extensions = [
     "myst_nb",
     "autoapi.extension",
     "sphinx.ext.napoleon",
-    "sphinx.ext.viewcode"
+    "sphinx.ext.viewcode",
+    "sphinxcontrib.imageembed"
 ]
-autoapi_dirs = ["../src"]
+autoapi_dirs = ["../src/ig_package"]
+autoapi_ignore = ["*IG_API_Details*"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
