@@ -1,0 +1,274 @@
+:py:mod:`ig_package.main`
+=========================
+
+.. py:module:: ig_package.main
+
+.. autoapi-nested-parse::
+
+   Module to interact with IG Group's API.
+
+   Created on Tuesday 12th March 2024.
+   @author: Harry New
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   ig_package.main._RequestHandler
+   ig_package.main.IG
+   ig_package.main.Watchlist
+   ig_package.main.Instrument
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   ig_package.main.logger
+
+
+.. py:data:: logger
+
+   
+
+.. py:class:: _RequestHandler(period: int)
+
+
+   Object for handling all requests sent to the IG API.
+   - Ensures response is successful.
+   - Limits requests sent.
+
+   .. py:method:: send_request(url: str, method: str, headers: dict, data: dict = None) -> requests.Response
+
+      Sending request to the API.
+
+      :param url: URL for the REST API request.
+      :type url: str
+      :param method: Type of method for the request e.g. "GET", "POST", "PUT" or "DELETE".
+      :type method: str
+      :param headers: Dictionary containing details of the trading session.
+      :type headers: dict
+      :param data: Dictionary containing additional data for request if required.
+      :type data: dict (OPTIONAL)
+
+      :returns: Response object from the API request.
+      :rtype: requests.Response
+
+
+
+.. py:class:: IG(API_key: str, username: str, password: str, watchlist_enable: bool = False)
+
+
+   Object to interact with IG Group's API.
+     - Open trading sessions.
+     - Get historical data.
+     - Close trading sessions.
+
+   **NOTE: API key, username and password should be entered when initialising the IG object.
+
+   .. py:method:: open_trading_session() -> bool
+
+      Opens a IG Group trading session.
+
+      :returns: Boolean if response was successful or not.
+      :rtype: bool
+
+
+   .. py:method:: check_trading_session() -> bool
+
+      Checking if trading session active.
+
+      :returns: Boolean depending if trading session is open or not.
+      :rtype: bool
+
+
+   .. py:method:: _get_watchlists_from_IG() -> dict | None
+
+      Getting all watchlists associated with the API key.
+      Watchlists are directly from IG.
+
+      :returns: Dictionary of IG watchlists.
+      :rtype: dict
+
+
+   .. py:method:: _get_watchlist_objs() -> list[Watchlist] | None
+
+      Getting watchlists within IG Obj directly from IG API.
+
+      :returns: List of Watchlist objects.
+      :rtype: list[Watchlist]
+
+
+   .. py:method:: _get_watchlist_from_IG(name: str = None, id: str = None) -> dict | None
+
+      Getting a singular watchlist associated with the API key.
+      Watchlist is directly from IG.
+
+      :param name: Name of the watchlist.
+      :type name: str = None (OPTIONAL)
+      :param id: ID of the watchlist.
+      :type id: str = None  (OPTIONAL)
+
+      :returns: Dictionary of IG watchlist.
+      :rtype: dict
+
+
+   .. py:method:: _get_watchlist_obj(name: str = None, id: str = None) -> Watchlist | None
+
+      Getting a singular Watchlist object.
+
+      :param name: Name of the watchlist.
+      :type name: str = None (OPTIONAL)
+      :param id: ID of the watchlist.
+      :type id: str = None  (OPTIONAL)
+
+      :returns: Watchlist with corresponding name or id.
+      :rtype: Watchlist
+
+
+   .. py:method:: add_watchlist(name: str) -> Watchlist | None
+
+      Adding watchlist associated to relevant API key.
+      ***NOTE: IG object must have watchlist enabled to use this.***
+
+      :param name: Name of the watchlist to be created.
+      :type name: str
+
+      :returns: Watchlist object created.
+      :rtype: Watchlist
+
+
+   .. py:method:: del_watchlist(name: str = None, id: str = None) -> Watchlist | None
+
+      Deleting watchlist associated to relevant API key.
+      ***NOTE: IG object must have watchlist enabled to use this.***
+
+      :param name: Name of the watchlist to be deleted.
+      :type name: str=None (OPTIONAL)
+      :param id: ID of the watchlist to be deleted.
+      :type id: str=None (OPTIONAL)
+
+      :returns: Wacthlist object that was deleted.
+      :rtype: Watchlist
+
+
+   .. py:method:: search_instrument(name: str) -> Instrument | None
+
+      Search for instrument.
+      Gets the closest instrument to the inputted string.
+
+      :param name: Name of instrument to be searched for.
+      :type name: str
+
+      :returns: Instrument object of the top match to the inputted string.
+      :rtype: Instrument
+
+
+
+.. py:class:: Watchlist(id: str, IG_obj: IG)
+
+
+   Object representing IG Group API's watchlist.
+   - Holds a series of financial instruments.
+   - Can be used to get historical data for all.
+
+   .. py:method:: _get_instruments_IG() -> list | None
+
+      Getting financial instruments held within the watchlist from the IG API.
+
+      :returns: List of markets stored within watchlist.
+      :rtype: list
+
+
+   .. py:method:: _get_instrument_objects() -> list
+
+      Getting instrument objects of all instruments within the watchlist.
+
+      :returns: List of Instrument objects within Watchlist.
+      :rtype: list
+
+
+   .. py:method:: _get_instrument(name: str = None, epic: str = None) -> dict | None
+
+      Gets instrument by name or epic.
+
+      :param name: Name of the Instrument.
+      :type name: str=None (OPTIONAL)
+      :param epic: Epic of the Instrument.
+      :type epic: str=None (OPTIONAL)
+
+      :returns: Dictionary with relevant instrument information.
+      :rtype: dict
+
+
+   .. py:method:: add_instrument(instrument_name: str) -> str
+
+      Adding instrument to watchlist.
+      Updates watchlist markets attribute.
+
+      :param instrument_name: Name of instrument to be added.
+      :type instrument_name: str
+
+      :returns: Instrument epic.
+      :rtype: str
+
+
+   .. py:method:: del_instrument(instrument_name: str = None, epic: str = None) -> None
+
+      Deleting instrument from watchlist.
+      Takes instrument name and searches watchlist for it.
+      Updates watchlist markets attribute.
+
+      :param instrument_name: Name of instrument to be deleted.
+      :type instrument_name: str=None (OPTIONAL)
+      :param epic: Epic of instrument to be deleted.
+      :type epic: str=None (OPTIONAL)
+
+
+   .. py:method:: get_all_historical_data(resolution: str, start: str, end: str) -> dict
+
+      Gets all historical data from instruments contained within the watchlist.
+
+      :param resolution: Resolution of the historical data e.g. SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH.
+      :type resolution: str
+      :param start: Start date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+      :type start: str
+      :param end: End date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+      :type end: str
+
+      :returns: Dictionary of all dataframes with the key being the instrument name.
+      :rtype: dict
+
+
+
+.. py:class:: Instrument(epic: str, IG_obj: IG)
+
+
+   Object representing a single instruement from IG API.
+   - Allows for collection of historical data.
+
+   .. py:method:: get_historical_prices(resolution: str, start: str, end: str) -> pandas.DataFrame | None
+
+      Getting historical price data for the instrument from IG API.
+
+      :param resolution: Resolution of the historical data e.g. SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH.
+      :type resolution: str
+      :param start: Start date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+      :type start: str
+      :param end: End date of historical data e.g. "YYYY:MM:DD-HH:mm:ss".
+      :type end: str
+
+      :returns: Dataframe containing Date (INDEX), Open, High, Low and Close data.
+      :rtype: pd.DataFrame
+
+
+

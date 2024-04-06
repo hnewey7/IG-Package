@@ -1,0 +1,59 @@
+:py:mod:`ig_package.IG_API_Details`
+===================================
+
+.. py:module:: ig_package.IG_API_Details
+
+.. autoapi-nested-parse::
+
+   Module for storing IG API Key and Account Information.
+
+   Created on Tuesday 12th March 2024
+   @author: Harry New
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   ig_package.IG_API_Details.get_header
+   ig_package.IG_API_Details.get_body
+   ig_package.IG_API_Details.get_username
+   ig_package.IG_API_Details.get_password
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   ig_package.IG_API_Details.header
+   ig_package.IG_API_Details.body
+
+
+.. py:data:: header
+
+   
+
+.. py:data:: body
+
+   
+
+.. py:function:: get_header()
+
+
+.. py:function:: get_body()
+
+
+.. py:function:: get_username()
+
+
+.. py:function:: get_password()
+
+

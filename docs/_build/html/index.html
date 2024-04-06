@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Package for IG Group’s API. &mdash; IG Package  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            IG Package
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">IG Package</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python Package for IG Group’s API.</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-package-for-ig-group-s-api">
+<h1>Python Package for IG Group’s API.<a class="headerlink" href="#python-package-for-ig-group-s-api" title="Link to this heading"></a></h1>
+<section id="a-package-allowing-easy-interaction-with-ig-group-s-rest-api">
+<h2>A package allowing easy interaction with IG Group’s REST API.<a class="headerlink" href="#a-package-allowing-easy-interaction-with-ig-group-s-rest-api" title="Link to this heading"></a></h2>
+<p>This project is a fully functional package that allows easy interaction with IG Group’s REST API. The main function being to retrieve historical data for later use in backtesting. To do this, key functions were defined for:</p>
+<ul class="simple">
+<li><p>Opening trading sessions.</p></li>
+<li><p>Searching specific financial instruments.</p></li>
+<li><p>Getting historical prices from finanical instruments.</p></li>
+<li><p>Managing watchlists.</p></li>
+<li><p>Closing trading sessions.</p></li>
+</ul>
+<p><img alt="screenshot" src="images/class_diagram.png" /></p>
+</section>
+<section id="how-to-utilise-this-package">
+<h2>How to utilise this package<a class="headerlink" href="#how-to-utilise-this-package" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Clone this project.</p></li>
+<li><p>Copy the folder “IG” into the same directory where your Python script will be.</p></li>
+<li><p>Within the package, copy your API key into “X-IG-API-KEY” of the header dictionary, as well as your username and password into “identifier” and “password” of the body dictionary. <strong>Note these details will be given to you from IG when you set up an API Key.</strong></p></li>
+<li><p>Import the IG class from the package.</p></li>
+<li><p>Initialise an object of the IG class and start utilising it’s functionality.</p></li>
+</ol>
+</section>
+<section id="how-to-contribute-to-this-package">
+<h2>How to contribute to this package<a class="headerlink" href="#how-to-contribute-to-this-package" title="Link to this heading"></a></h2>
+<p>The classes within this package are based on the functionaliy of IG Group’s REST API so in order to contribute I would recommend experimenting with their <a class="reference external" href="https://labs.ig.com/sample-apps/api-companion/index.html">API Companion</a>.</p>
+<p>The three main classes: IG, Watchlist and Instrument, are all defined in <a class="reference internal" href="#/IG/main.py"><span class="xref myst">main.py</span></a> and functions can be easily added to each of them.</p>
+<p>If any new classes have been defined then remember to import the new classes into <a class="reference internal" href="#/IG/__init__.py"><span class="xref myst">__init__.py</span></a>. This allows users to import the classes directly from the package.</p>
+</section>
+<section id="fixing-bugs">
+<h2>Fixing bugs<a class="headerlink" href="#fixing-bugs" title="Link to this heading"></a></h2>
+<p>Please make sure to report any bugs found as issues on Github. If you then want to submit a pull request, make sure to reference the issue.</p>
+</section>
+<section id="future-development">
+<h2>Future Development<a class="headerlink" href="#future-development" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Adding functions to handle active positions, therefore allowing users to execute trades.</p></li>
+<li><p>Adding working trades so executing trades when the price reaches a certain amount on a specific instrument.</p></li>
+<li><p>Adding a demo version as IG’s API also can manage demo accounts too.</p></li>
+</ol>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Harry New.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
