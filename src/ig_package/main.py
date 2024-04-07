@@ -239,7 +239,19 @@ class IG():
       # Adjusting header.
       self.header["Version"] = "1"
       # Checking if watchlist already exists.
-      if not self._get_watchlist_obj(name):
+      existing_IG_watchlist = self._get_watchlist_from_IG(name)
+      existing_watchlist = self._get_watchlist_obj(name)
+      if existing_watchlist:
+        logger.info("Watchlist cannot be added, already exists.")
+        return existing_watchlist
+      elif existing_IG_watchlist:
+        logger.info("Watchlist cannot be added, already exists.")
+        # Creating watchlist object.
+        watchlist = Watchlist(existing_IG_watchlist["id"],self)
+        if not existing_watchlist:
+          self.watchlists.append(watchlist)
+        return watchlist
+      else:
         # Sending request.
         logger.info(f"Requesting new watchlist ({name}).")
         response = self.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists","POST",headers=self.header,data=json.dumps({"name":name}))
@@ -253,9 +265,6 @@ class IG():
         else:
           logger.info("New watchlist: DENIED")
           return None
-      else:
-        logger.info("Watchlist cannot be added, already exists.")
-        return None
     else:
       logger.info("Watchlists disabled in initialisation of IG object, please enable to use this method.")
 
