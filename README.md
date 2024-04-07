@@ -10,7 +10,7 @@ This project is a fully functional package that allows easy interaction with IG 
 * Managing watchlists.
 * Closing trading sessions.
 
-![Class diagram](class_diagram.png)
+![Class diagram](https://github.com/hnewey7/IG-Package/blob/main/class_diagram.png?raw=true)
 
 ## How to utilise this package
 

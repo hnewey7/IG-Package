@@ -6,7 +6,7 @@
   <title>ig_package.main &mdash; IG Package  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
 
   
@@ -43,8 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conduct.html">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
 </ul>
 
@@ -342,7 +343,19 @@
       <span class="c1"># Adjusting header.</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;Version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
       <span class="c1"># Checking if watchlist already exists.</span>
-      <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_watchlist_obj</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+      <span class="n">existing_IG_watchlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_watchlist_from_IG</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+      <span class="n">existing_watchlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_watchlist_obj</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">existing_watchlist</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Watchlist cannot be added, already exists.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">existing_watchlist</span>
+      <span class="k">elif</span> <span class="n">existing_IG_watchlist</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Watchlist cannot be added, already exists.&quot;</span><span class="p">)</span>
+        <span class="c1"># Creating watchlist object.</span>
+        <span class="n">watchlist</span> <span class="o">=</span> <span class="n">Watchlist</span><span class="p">(</span><span class="n">existing_IG_watchlist</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">existing_watchlist</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">watchlists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">watchlist</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">watchlist</span>
+      <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Sending request.</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requesting new watchlist (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_handler</span><span class="o">.</span><span class="n">send_request</span><span class="p">(</span><span class="s2">&quot;https://api.ig.com/gateway/deal/watchlists&quot;</span><span class="p">,</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">name</span><span class="p">}))</span>
@@ -356,9 +369,6 @@
         <span class="k">else</span><span class="p">:</span>
           <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;New watchlist: DENIED&quot;</span><span class="p">)</span>
           <span class="k">return</span> <span class="kc">None</span>
-      <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Watchlist cannot be added, already exists.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Watchlists disabled in initialisation of IG object, please enable to use this method.&quot;</span><span class="p">)</span></div>
 
