@@ -80,13 +80,10 @@ def test_watchlist_adding_removing_instrument() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
-  # Setting watchlist enable to True.
-  ig.watchlist_enable = True
-  # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig._get_watchlists_from_IG()
-  # Getting single watchlist.
-  watchlist = Watchlist(watchlists_dict[1]["id"],ig)
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password,watchlist_enable=True)
+
+  # Creating new watchlist.
+  watchlist = ig.add_watchlist("Test Watchlist")
 
   # Testing adding instrument.
   instrument_epic = watchlist.add_instrument("FTSE100")
@@ -106,6 +103,9 @@ def test_watchlist_adding_removing_instrument() -> None:
   instrument = watchlist._get_instrument(epic=instrument_epic)
   watchlist.del_instrument(instrument_name=instrument.name,epic=instrument.epic)
   assert instrument not in watchlist.markets
+
+  # Deleting watchlist.
+  ig.del_watchlist("Test Watchlist")
 
 @pytest.mark.parametrize("resolution,start,end", [
   ("DAY","2024:03:24-00:00:00","2024:03:25-00:00:00"),
