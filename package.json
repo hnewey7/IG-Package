@@ -1,6 +1,6 @@
 {
   "name": "ig_package",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Python package to interact with IG Group's REST API.",
   "main": "index.js",
   "directories": {
