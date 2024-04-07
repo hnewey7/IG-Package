@@ -9,7 +9,7 @@ Created on Sunday 31st March 2024.
 import pytest
 from ig_package import IG, Watchlist
 
-from src.ig_package.IG_API_Details import get_username, get_password
+from IG_API_Details import get_username, get_password
 
 # - - - - - - - - - - - - - - - - -
 
