@@ -79,7 +79,7 @@ def test_IG_watchlist_enabled() -> None:
   assert watchlist in ig.watchlists
   # Creating watchlist with same name.
   watchlist = ig.add_watchlist("Test")
-  assert watchlist == None
+  assert watchlist in ig.watchlists
 
   # Deleting watchlist through name.
   watchlist = ig.del_watchlist("Test")

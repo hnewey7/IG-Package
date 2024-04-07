@@ -64,7 +64,7 @@ def test_watchlist_get_instrument() -> None:
   # Getting watchlist dictionary from  IG.
   watchlists_dict = ig._get_watchlists_from_IG()
   # Getting single watchlist.
-  watchlist = Watchlist(watchlists_dict[1]["id"],ig)
+  watchlist = Watchlist("Popular Markets",ig)
 
   # Testing getting single instrument.
   instrument = watchlist.markets[0]
