@@ -118,15 +118,15 @@ def test_watchlist_historical_data(resolution,start,end) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
-  # Setting watchlist enable to True.
-  ig.watchlist_enable = True
-  # Getting watchlist dictionary from  IG.
-  watchlists_dict = ig._get_watchlists_from_IG()
-  # Getting single watchlist.
-  watchlist = Watchlist(watchlists_dict[1]["id"],ig)
+  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password,watchlist_enable=True)
+  # Adding watchlist to IG and adding instrument to watchlist.
+  watchlist = ig.add_watchlist("Test Historical Data")
+  watchlist.add_instrument("FTSE 100")
 
   # Getting historical data.
   historical_data = watchlist.get_all_historical_data(resolution,start,end)
   for instrument in watchlist.markets:
     assert instrument.name in historical_data.keys()
+
+  # Deleting watchlist.
+  ig.del_watchlist("Test Historical Data")
