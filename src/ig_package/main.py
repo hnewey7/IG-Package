@@ -343,7 +343,7 @@ class Watchlist():
     self.id = watchlist_dict["id"]
     self.name = watchlist_dict["name"]
     self.IG_obj = IG_obj
-    self.markets = self._get_instrument_objects()
+    self.markets: list[Instrument] = []
 
   def _get_instruments_IG(self) -> list | None:
     """ Getting financial instruments held within the watchlist from the IG API.
@@ -417,11 +417,22 @@ class Watchlist():
     response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/markets?searchTerm={}".format(instrument_name),"GET",headers=self.IG_obj.header)
     instruments = json.loads(response.text)["markets"]
     top_instrument_epic = instruments[0]["epic"]
-    # Sending request to add instrument to watchlist.
-    logger.info(f"Adding top market ({top_instrument_epic}) to watchlist ({self.id})")
-    response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),"PUT",headers=self.IG_obj.header,data=json.dumps({"epic":top_instrument_epic}))
-    # Updating markets.
-    self.markets = self._get_instrument_objects()
+
+    # Checking if epic is already present in watchlist.
+    instruments = self._get_instruments_IG()
+    present_check = False
+    for instrument in instruments:
+      if instrument["epic"] == top_instrument_epic:
+        present_check = True
+
+    if not present_check:
+      # Sending request to add instrument to watchlist.
+      logger.info(f"Adding top market ({top_instrument_epic}) to watchlist ({self.id})")
+      response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}".format(self.id),"PUT",headers=self.IG_obj.header,data=json.dumps({"epic":top_instrument_epic}))
+      # Creating new instrument.
+      new_instrument = Instrument(top_instrument_epic,self.IG_obj)
+      self.markets.append(new_instrument)
+
     return top_instrument_epic
 
   def del_instrument(self,instrument_name:str=None,epic:str=None) -> None:
@@ -442,8 +453,11 @@ class Watchlist():
     # Sending request to delete instrument from watchlist.
     logger.info(f"Requesting instrument to be removed ({instrument.epic}) from watchlist ({self.id}).")
     response = self.IG_obj.request_handler.send_request("https://api.ig.com/gateway/deal/watchlists/{}/{}".format(self.id,instrument.epic),"DELETE",headers=self.IG_obj.header)
-    # Updating markets.
-    self.markets = self._get_instrument_objects()
+    
+    # Removing instrument from markets.
+    for instrument in self.markets:
+      if instrument.epic == epic or instrument.name == instrument_name:
+        self.markets.remove(instrument)
 
   def get_all_historical_data(self,resolution:str,start:str,end:str) -> dict:
     """ Gets all historical data from instruments contained within the watchlist.
@@ -461,6 +475,8 @@ class Watchlist():
         -------
         dict
           Dictionary of all dataframes with the key being the instrument name."""
+    # Getting all markets.
+    self.markets = self._get_instrument_objects()
     # Creating dictionary to store all dataframes.
     df_dict = {}
     for instrument in self.markets:
