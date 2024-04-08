@@ -67,6 +67,7 @@ def test_watchlist_get_instrument() -> None:
   watchlist = Watchlist("Popular Markets",ig)
 
   # Testing getting single instrument.
+  watchlist.markets = watchlist._get_instrument_objects()
   instrument = watchlist.markets[0]
   test_instrument = watchlist._get_instrument(name=instrument.name)
   assert test_instrument != None
