@@ -91,12 +91,14 @@
 </section>
 <section id="how-to-utilise-this-package">
 <h2>How to utilise this package<a class="headerlink" href="#how-to-utilise-this-package" title="Link to this heading"></a></h2>
-<ol class="arabic simple">
-<li><p>Clone this project.</p></li>
-<li><p>Copy the folder “IG” into the same directory where your Python script will be.</p></li>
-<li><p>Within the package, copy your API key into “X-IG-API-KEY” of the header dictionary, as well as your username and password into “identifier” and “password” of the body dictionary. <strong>Note these details will be given to you from IG when you set up an API Key.</strong></p></li>
-<li><p>Import the IG class from the package.</p></li>
-<li><p>Initialise an object of the IG class and start utilising it’s functionality.</p></li>
+<ol class="arabic">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ig_package</span></code> in the command prompt.</p></li>
+<li><p>Import the IG object into your script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ig_package</span> <span class="kn">import</span> <span class="n">IG</span>
+</pre></div>
+</div>
+</li>
+<li><p>Initialise the IG object including your API Key and details in the relevant parameters.</p></li>
 </ol>
 </section>
 <section id="how-to-contribute-to-this-package">

@@ -14,11 +14,12 @@ This project is a fully functional package that allows easy interaction with IG 
 
 ## How to utilise this package
 
-1. Clone this project.
-2. Copy the folder "IG" into the same directory where your Python script will be.
-3. Within the package, copy your API key into "X-IG-API-KEY" of the header dictionary, as well as your username and password into "identifier" and "password" of the body dictionary. **Note these details will be given to you from IG when you set up an API Key.**
-4. Import the IG class from the package.
-5. Initialise an object of the IG class and start utilising it's functionality.
+1. Use ```pip install ig_package``` in the command prompt.
+2. Import the IG object into your script:
+   ```python
+   from ig_package import IG
+   ```
+3. Initialise the IG object including your API Key and details in the relevant parameters.
 
 ## How to contribute to this package
 
