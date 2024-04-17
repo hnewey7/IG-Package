@@ -487,7 +487,7 @@ class Watchlist():
 # - - - - - - - - - - - - - - - - - - - - -
     
 class Instrument():
-  """ Object representing a single instruement from IG API.
+  """ Object representing a single instrument from IG API.
         - Allows for collection of historical data."""
   
   def __init__(self,epic:str,IG_obj:IG) -> None:
