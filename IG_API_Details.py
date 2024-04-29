@@ -22,6 +22,8 @@ body = {
   "encrytedPassword":False
 }
 
+key = ""
+
 # - - - - - - - - - - - - - - - - - - -
 
 def get_header():
@@ -35,3 +37,6 @@ def get_username():
 
 def get_password():
   return body["password"]
+
+def get_key():
+  return key
