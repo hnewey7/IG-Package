@@ -10,7 +10,7 @@ import pytest
 import requests
 from ig_package import IG
 
-from IG_API_Details import get_username, get_password
+from IG_API_Details import get_username, get_password, get_key
 
 # - - - - - - - - - - - - - - - - -
 
@@ -20,7 +20,7 @@ def test_IG_valid_connection(iteration) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password)
   # Checking trading session.
   assert ig.check_trading_session()
   # Deleting object.
@@ -46,7 +46,7 @@ def test_IG_close_trading_session(iteration) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password)
   # Checking if valid session.
   assert ig.check_trading_session()
   # Deleting object.
@@ -60,7 +60,7 @@ def test_IG_watchlist_enabled() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password,watchlist_enable=True)
+  ig = IG(API_key=get_key(),username=username,password=password,watchlist_enable=True)
   # Checking if watchlists available.
   assert ig.watchlists
   for watchlist in ig.watchlists:
@@ -106,7 +106,7 @@ def test_IG_watchlist_disabled() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password)
   
   # Testing getting watchlists from IG.
   watchlists_dict = ig._get_watchlists_from_IG()
@@ -132,7 +132,7 @@ def test_IG_search_instrument() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password)
   # Searching for instrument.
   instrument = ig.search_instrument("FTSE100")
   assert hasattr(instrument,"IG_obj")
@@ -142,3 +142,12 @@ def test_IG_search_instrument() -> None:
   assert hasattr(instrument,"type")
   assert hasattr(instrument,"market_id")
   assert hasattr(instrument,"margin")
+
+def test_IG_open_streaming_session() -> None:
+  """ Testing the open a streaming session method."""
+  # Initialising IG object.
+  username = get_username()
+  password = get_password()
+  ig = IG(API_key=get_key(),username=username,password=password)
+
+  ig.open_streaming_session()
