@@ -149,5 +149,8 @@ def test_IG_open_streaming_session() -> None:
   username = get_username()
   password = get_password()
   ig = IG(API_key=get_key(),username=username,password=password)
-
+  # Opening streaming session.
   ig.open_streaming_session()
+  # Handling checks.
+  assert ig.lightstreamer_client
+  assert ig.lightstreamer_client.getStatus() == "CONNECTING"
