@@ -9,7 +9,7 @@ Created on Monday 1st April 2024.
 import pytest
 from ig_package import IG, Instrument
 
-from IG_API_Details import get_username, get_password
+from IG_API_Details import get_username, get_password, get_key
 
 
 # - - - - - - - - - - - - - - - - -
@@ -25,7 +25,7 @@ def test_instrument_init(instrument) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password)
   # Getting instrument through IG object.
   instrument = ig.search_instrument(instrument)
 
@@ -42,7 +42,7 @@ def test_instrument_historical_prices() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key="e9365a5085ccd18ccc2c2d1d91ce51ad3a6e69f8",username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password)
   # Getting instrument through IG object.
   instrument = ig.search_instrument("FTSE 100")
 
