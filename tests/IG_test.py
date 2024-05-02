@@ -149,8 +149,13 @@ def test_IG_open_streaming_session() -> None:
   username = get_username()
   password = get_password()
   ig = IG(API_key=get_key(),username=username,password=password)
-  # Opening streaming session.
+  # Handling checks.
+  assert not hasattr(ig,"ig_service")
+  assert not hasattr(ig,"ig_streaming_service")
+  assert not hasattr(ig,"streaming_manager")
+  # Opening streamin g session.
   ig.open_streaming_session()
   # Handling checks.
-  assert ig.lightstreamer_client
-  assert ig.lightstreamer_client.getStatus() == "CONNECTING"
+  assert hasattr(ig,"ig_service")
+  assert hasattr(ig,"ig_streaming_service")
+  assert hasattr(ig,"streaming_manager")
