@@ -26,6 +26,16 @@ key = ""
 
 # - - - - - - - - - - - - - - - - - - -
 
+class config(object):
+  """ Class for storing all account details related to IG Group."""
+  username = ""
+  password = ""
+  api_key = ""
+  acc_type = "PROD"
+  acc_number = ""
+
+# - - - - - - - - - - - - - - - - - - -
+
 def get_header():
   return header
 
