@@ -53,3 +53,26 @@ def test_instrument_historical_prices() -> None:
   assert "High" in column_names
   assert "Low" in column_names
   assert "Close" in column_names
+
+def test_instrument_start_live_data() -> None:
+  """ Testing get live data method of the instrument class."""
+  # Initialising IG object.
+  username = get_username()
+  password = get_password()
+  ig = IG(API_key=get_key(),username=username,password=password)
+  # Getting instrument through IG object.
+  instrument = ig.search_instrument("FTSE 100")
+
+  # Checking if streaming session not open.
+  assert not hasattr(ig,"streaming_manager")
+  assert not hasattr(ig,"ig_service")
+  assert not hasattr(ig,"ig_streaming_service")
+
+  # Starting collection of data.
+  instrument.start_live_data()
+
+  # Checking if streaming session open.
+  assert hasattr(ig,"streaming_manager")
+  assert hasattr(ig,"ig_service")
+  assert hasattr(ig,"ig_streaming_service")
+  assert hasattr(instrument,"ticker")
