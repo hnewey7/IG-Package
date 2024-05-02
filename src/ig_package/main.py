@@ -562,5 +562,15 @@ class Instrument():
     df = pd.DataFrame(all_data, columns=['Datetime', 'Open', 'High', 'Low', 'Close'])
     df.set_index("Datetime",inplace=True)
     return df
+  
+  def start_live_data(self) -> None:
+    """ Starting the live data ticker throught the lightstreamer_client."""
+    # Checking if streaming session open.
+    if not hasattr(self.IG_obj, "lightstreamer_client"):
+      self.IG_obj.open_streaming_session()
+    # Creating subscription.
+    self.IG_obj.streaming_manager.start_tick_subscription(self.epic)
+    # Getting ticker.
+    self.ticker = self.IG_obj.streaming_manager.ticker(self.epic)
 
 # - - - - - - - - - - - - - - - - - - - - -
