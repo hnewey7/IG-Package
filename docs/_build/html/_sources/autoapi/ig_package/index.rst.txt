@@ -54,6 +54,11 @@ Classes
       :rtype: bool
 
 
+   .. py:method:: open_streaming_session() -> None
+
+      Opening a streaming session through IG, allowing data to be collected in real time.
+
+
    .. py:method:: check_trading_session() -> bool
 
       Checking if trading session active.
@@ -224,7 +229,7 @@ Classes
 .. py:class:: Instrument(epic: str, IG_obj: IG)
 
 
-   Object representing a single instruement from IG API.
+   Object representing a single instrument from IG API.
    - Allows for collection of historical data.
 
    .. py:method:: get_historical_prices(resolution: str, start: str, end: str) -> pandas.DataFrame | None
@@ -240,6 +245,11 @@ Classes
 
       :returns: Dataframe containing Date (INDEX), Open, High, Low and Close data.
       :rtype: pd.DataFrame
+
+
+   .. py:method:: start_live_data() -> None
+
+      Starting the live data ticker throught the lightstreamer_client.
 
 
 
