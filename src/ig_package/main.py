@@ -16,7 +16,10 @@ from pathlib import Path
 import time
 from datetime import datetime
 import pandas as pd
-from lightstreamer.client import *
+
+from trading_ig import IGService, IGStreamService
+from IG_API_Details import config
+from trading_ig.streamer.manager import StreamingManager
 
 # - - - - - - - - - - - - - - - - - - - - -
 
@@ -121,17 +124,12 @@ class IG():
 
   def open_streaming_session(self) -> None:
     """ Opening a streaming session through IG, allowing data to be collected in real time."""
-    # Requesting session V3 for the light streamer endpoint.
-    logger.info("Requesting trading session.")
-    self.header["VERSION"] = "3"
-    response = self.request_handler.send_request("https://api.ig.com/gateway/deal/session","POST",headers=self.header,data=json.dumps(self.body))
-    response_dict = json.loads(response.text)
-    # Setting up lightstreamer client.
-    self.lightstreamer_client = LightstreamerClient(response_dict["lightstreamerEndpoint"],"PROD")
-    self.lightstreamer_client.connectionDetails.setUser(response_dict["accountId"])
-    self.lightstreamer_client.connectionDetails.setPassword("CST-" + self.header["CST"] + "|XST-" + self.header["X-SECURITY-TOKEN"])
-    # Connecting.
-    self.lightstreamer_client.connect()
+    # Opening IG service.
+    self.ig_service = IGService(config.username,config.password,config.api_key,config.acc_type,config.acc_number)
+    # Opening streaming service.
+    self.ig_streaming_service = IGStreamService(self.ig_service)
+    self.ig_streaming_service.create_session(version="3")
+    self.streaming_manager = StreamingManager(self.ig_streaming_service)
 
   def check_trading_session(self) -> bool:
     """ Checking if trading session active.
