@@ -23,6 +23,8 @@ body = {
 }
 
 key = ""
+account_type = ""
+account_number = ""
 
 # - - - - - - - - - - - - - - - - - - -
 
@@ -49,3 +51,9 @@ def get_password():
 
 def get_key():
   return key
+
+def get_account_type():
+  return account_type
+
+def get_account_number():
+  return account_number
