@@ -10,7 +10,7 @@ import pytest
 import requests
 from ig_package import IG
 
-from IG_API_Details import get_username, get_password, get_key
+from IG_API_Details import get_username, get_password, get_key, get_account_type, get_account_number
 
 # - - - - - - - - - - - - - - - - -
 
@@ -20,7 +20,7 @@ def test_IG_valid_connection(iteration) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Checking trading session.
   assert ig.check_trading_session()
   # Deleting object.
@@ -35,9 +35,9 @@ def test_IG_invalid_connection(API_key,username,password,watchlist_enable) -> No
   """ Testing IG object connection with a series of false values and types."""
   with pytest.raises(requests.exceptions.InvalidHeader):
     # Checking invalid key type.
-    ig = IG(API_key=123,username="username",password="password",watchlist_enable=True)
+    ig = IG(API_key=123,username="username",password="password",acc_type="",acc_number="",watchlist_enable=True)
     # Checking invalid username and password.
-    ig = IG(API_key="123",username="username",password="password",watchlist_enable=True)
+    ig = IG(API_key="123",username="username",password="password",acc_type="",acc_number="",watchlist_enable=True)
     del ig
 
 @pytest.mark.parametrize("iteration",[(i) for i in range(10)])
@@ -46,7 +46,7 @@ def test_IG_close_trading_session(iteration) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Checking if valid session.
   assert ig.check_trading_session()
   # Deleting object.
@@ -60,7 +60,7 @@ def test_IG_watchlist_enabled() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password,watchlist_enable=True)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number(),watchlist_enable=True)
   # Checking if watchlists available.
   assert ig.watchlists
   for watchlist in ig.watchlists:
@@ -106,7 +106,7 @@ def test_IG_watchlist_disabled() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   
   # Testing getting watchlists from IG.
   watchlists_dict = ig._get_watchlists_from_IG()
@@ -132,7 +132,7 @@ def test_IG_search_instrument() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Searching for instrument.
   instrument = ig.search_instrument("FTSE100")
   assert hasattr(instrument,"IG_obj")
@@ -148,7 +148,7 @@ def test_IG_open_streaming_session() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Handling checks.
   assert not hasattr(ig,"ig_service")
   assert not hasattr(ig,"ig_streaming_service")

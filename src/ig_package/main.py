@@ -18,7 +18,6 @@ from datetime import datetime
 import pandas as pd
 
 from trading_ig import IGService, IGStreamService
-from IG_API_Details import config
 from trading_ig.streamer.manager import StreamingManager
 
 # - - - - - - - - - - - - - - - - - - - - -
@@ -82,8 +81,10 @@ class IG():
 
       **NOTE: API key, username and password should be entered when initialising the IG object."""
 
-  def __init__(self,API_key:str,username:str,password:str,watchlist_enable:bool=False) -> None:
+  def __init__(self,API_key:str,username:str,password:str,acc_type:str,acc_number:str,watchlist_enable:bool=False) -> None:
     self.watchlist_enable = watchlist_enable
+    self.acc_type = acc_type
+    self.acc_number = acc_number
     # Defining header.
     self.header = {
       "Content-Type":"application/json; charset=UTF-8",
@@ -125,7 +126,7 @@ class IG():
   def open_streaming_session(self) -> None:
     """ Opening a streaming session through IG, allowing data to be collected in real time."""
     # Opening IG service.
-    self.ig_service = IGService(config.username,config.password,config.api_key,config.acc_type,config.acc_number)
+    self.ig_service = IGService(self.body["identifier"],self.body["password"],self.header["X-IG-API-KEY"],self.acc_type,self.acc_number)
     # Opening streaming service.
     self.ig_streaming_service = IGStreamService(self.ig_service)
     self.ig_streaming_service.create_session(version="3")

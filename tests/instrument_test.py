@@ -8,8 +8,9 @@ Created on Monday 1st April 2024.
 
 import pytest
 from ig_package import IG, Instrument
+import time
 
-from IG_API_Details import get_username, get_password, get_key
+from IG_API_Details import get_username, get_password, get_key, get_account_type, get_account_number
 
 
 # - - - - - - - - - - - - - - - - -
@@ -25,7 +26,7 @@ def test_instrument_init(instrument) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Getting instrument through IG object.
   instrument = ig.search_instrument(instrument)
 
@@ -37,12 +38,14 @@ def test_instrument_init(instrument) -> None:
   assert hasattr(instrument,"market_id")
   assert hasattr(instrument,"margin")
 
+  time.sleep(5)
+
 def test_instrument_historical_prices() -> None:
   """ Testing getting historical prices of an instrument."""
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Getting instrument through IG object.
   instrument = ig.search_instrument("FTSE 100")
 
@@ -59,7 +62,7 @@ def test_instrument_start_live_data() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Getting instrument through IG object.
   instrument = ig.search_instrument("FTSE 100")
 
