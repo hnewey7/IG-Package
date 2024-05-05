@@ -9,7 +9,7 @@ Created on Sunday 31st March 2024.
 import pytest
 from ig_package import IG, Watchlist
 
-from IG_API_Details import get_username, get_password, get_key
+from IG_API_Details import get_username, get_password, get_key, get_account_type, get_account_number
 
 # - - - - - - - - - - - - - - - - -
 
@@ -18,7 +18,7 @@ def test_watchlist_init() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
@@ -36,7 +36,7 @@ def test_watchlist_get_instruments() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
@@ -58,7 +58,7 @@ def test_watchlist_get_instrument() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number())
   # Setting watchlist enable to True.
   ig.watchlist_enable = True
   # Getting watchlist dictionary from  IG.
@@ -81,7 +81,7 @@ def test_watchlist_adding_removing_instrument() -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password,watchlist_enable=True)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number(),watchlist_enable=True)
 
   # Creating new watchlist.
   watchlist = ig.add_watchlist("Test Watchlist")
@@ -118,7 +118,7 @@ def test_watchlist_historical_data(resolution,start,end) -> None:
   # Initialising IG object.
   username = get_username()
   password = get_password()
-  ig = IG(API_key=get_key(),username=username,password=password,watchlist_enable=True)
+  ig = IG(API_key=get_key(),username=username,password=password,acc_type=get_account_type(),acc_number=get_account_number(),watchlist_enable=True)
   # Adding watchlist to IG and adding instrument to watchlist.
   watchlist = ig.add_watchlist("Test Historical Data")
   watchlist.add_instrument("FTSE 100")
