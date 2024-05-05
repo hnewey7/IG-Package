@@ -8,6 +8,7 @@ Created on Monday 1st April 2024.
 
 import pytest
 from ig_package import IG, Instrument
+import time
 
 from IG_API_Details import get_username, get_password, get_key, get_account_type, get_account_number
 
@@ -36,6 +37,8 @@ def test_instrument_init(instrument) -> None:
   assert hasattr(instrument,"type")
   assert hasattr(instrument,"market_id")
   assert hasattr(instrument,"margin")
+
+  time.sleep(5)
 
 def test_instrument_historical_prices() -> None:
   """ Testing getting historical prices of an instrument."""
