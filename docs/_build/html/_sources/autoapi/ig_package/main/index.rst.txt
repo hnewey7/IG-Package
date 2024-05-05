@@ -65,7 +65,7 @@ Attributes
 
 
 
-.. py:class:: IG(API_key: str, username: str, password: str, watchlist_enable: bool = False)
+.. py:class:: IG(API_key: str, username: str, password: str, acc_type: str, acc_number: str, watchlist_enable: bool = False)
 
 
    Object to interact with IG Group's API.

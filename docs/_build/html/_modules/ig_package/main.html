@@ -93,6 +93,9 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
+<span class="kn">from</span> <span class="nn">trading_ig</span> <span class="kn">import</span> <span class="n">IGService</span><span class="p">,</span> <span class="n">IGStreamService</span>
+<span class="kn">from</span> <span class="nn">trading_ig.streamer.manager</span> <span class="kn">import</span> <span class="n">StreamingManager</span>
+
 <span class="c1"># - - - - - - - - - - - - - - - - - - - - -</span>
 
 <span class="k">global</span> <span class="n">logger</span>
@@ -162,8 +165,10 @@
 
 <span class="sd">      **NOTE: API key, username and password should be entered when initialising the IG object.&quot;&quot;&quot;</span>
 
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">API_key</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">password</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">watchlist_enable</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">API_key</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">username</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">password</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">acc_type</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">acc_number</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">watchlist_enable</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">watchlist_enable</span> <span class="o">=</span> <span class="n">watchlist_enable</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">acc_type</span> <span class="o">=</span> <span class="n">acc_type</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">acc_number</span> <span class="o">=</span> <span class="n">acc_number</span>
     <span class="c1"># Defining header.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="p">{</span>
       <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span><span class="s2">&quot;application/json; charset=UTF-8&quot;</span><span class="p">,</span>
@@ -203,6 +208,18 @@
       <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="IG.open_streaming_session">
+<a class="viewcode-back" href="../../autoapi/ig_package/main/index.html#ig_package.IG.open_streaming_session">[docs]</a>
+  <span class="k">def</span> <span class="nf">open_streaming_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Opening a streaming session through IG, allowing data to be collected in real time.&quot;&quot;&quot;</span>
+    <span class="c1"># Opening IG service.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ig_service</span> <span class="o">=</span> <span class="n">IGService</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;identifier&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;X-IG-API-KEY&quot;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">acc_type</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">acc_number</span><span class="p">)</span>
+    <span class="c1"># Opening streaming service.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ig_streaming_service</span> <span class="o">=</span> <span class="n">IGStreamService</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ig_service</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ig_streaming_service</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">streaming_manager</span> <span class="o">=</span> <span class="n">StreamingManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ig_streaming_service</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="IG.check_trading_session">
@@ -622,7 +639,7 @@
 <div class="viewcode-block" id="Instrument">
 <a class="viewcode-back" href="../../autoapi/ig_package/main/index.html#ig_package.Instrument">[docs]</a>
 <span class="k">class</span> <span class="nc">Instrument</span><span class="p">():</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot; Object representing a single instruement from IG API.</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot; Object representing a single instrument from IG API.</span>
 <span class="sd">        - Allows for collection of historical data.&quot;&quot;&quot;</span>
   
   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">epic</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">IG_obj</span><span class="p">:</span><span class="n">IG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -686,6 +703,19 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">all_data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Datetime&#39;</span><span class="p">,</span> <span class="s1">&#39;Open&#39;</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">])</span>
     <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Datetime&quot;</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
+
+  
+<div class="viewcode-block" id="Instrument.start_live_data">
+<a class="viewcode-back" href="../../autoapi/ig_package/main/index.html#ig_package.Instrument.start_live_data">[docs]</a>
+  <span class="k">def</span> <span class="nf">start_live_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Starting the live data ticker throught the lightstreamer_client.&quot;&quot;&quot;</span>
+    <span class="c1"># Checking if streaming session open.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IG_obj</span><span class="p">,</span> <span class="s2">&quot;lightstreamer_client&quot;</span><span class="p">):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">IG_obj</span><span class="o">.</span><span class="n">open_streaming_session</span><span class="p">()</span>
+    <span class="c1"># Creating subscription.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">IG_obj</span><span class="o">.</span><span class="n">streaming_manager</span><span class="o">.</span><span class="n">start_tick_subscription</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epic</span><span class="p">)</span>
+    <span class="c1"># Getting ticker.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ticker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">IG_obj</span><span class="o">.</span><span class="n">streaming_manager</span><span class="o">.</span><span class="n">ticker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epic</span><span class="p">)</span></div>
 </div>
 
 
