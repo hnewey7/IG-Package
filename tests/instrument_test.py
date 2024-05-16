@@ -19,7 +19,8 @@ from IG_API_Details import get_username, get_password, get_key, get_account_type
   ("FTSE 100"),
   ("US500"),
   ("UK 100"),
-  ("DOW")
+  ("DOW"),
+  ("BT Group PLC")
 ])
 def test_instrument_init(instrument) -> None:
   """ Testing initialisation of the instrument object."""
@@ -37,6 +38,8 @@ def test_instrument_init(instrument) -> None:
   assert hasattr(instrument,"type")
   assert hasattr(instrument,"market_id")
   assert hasattr(instrument,"margin")
+  assert hasattr(instrument,"open_time")
+  assert hasattr(instrument,"close_time") 
 
   time.sleep(5)
 
