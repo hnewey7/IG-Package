@@ -522,6 +522,13 @@ class Instrument():
         self.type = instrument_details["type"]
         self.market_id = instrument_details["marketId"]
         self.margin = instrument_details["margin"]
+        # Adding times.
+        if instrument_details["openingHours"]:
+          self.open_time = instrument_details["openingHours"]["marketTimes"][0]["openTime"]
+          self.close_time = instrument_details["openingHours"]["marketTimes"][0]["closeTime"]
+        else:
+          self.open_time = None
+          self.close_time = None
       else:
         self.success = False
     except:
